@@ -38,7 +38,7 @@ const ADMIN_HTML = `<!doctype html>
         backdrop-filter: blur(14px);
       }
       .bar, .wrap {
-        width: min(1180px, calc(100% - 32px));
+        width: min(1680px, calc(100% - 32px));
         margin: 0 auto;
       }
       .bar {
@@ -139,9 +139,10 @@ const ADMIN_HTML = `<!doctype html>
       }
       .wrap {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 320px;
+        grid-template-columns: minmax(0, 0.92fr) minmax(360px, 0.58fr);
         gap: 18px;
         padding: 22px 0;
+        align-items: start;
       }
       section, aside { padding: 18px; }
       .stack { display: grid; gap: 18px; }
@@ -166,6 +167,39 @@ const ADMIN_HTML = `<!doctype html>
         font-size: 13px;
         font-weight: 700;
       }
+      .side-panel {
+        position: sticky;
+        top: 90px;
+        display: grid;
+        gap: 14px;
+        max-height: calc(100vh - 112px);
+        overflow: hidden;
+      }
+      .preview-tools {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .preview-tools p {
+        margin: 0;
+        font-size: 13px;
+      }
+      .preview-frame {
+        width: 100%;
+        height: min(70vh, 760px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: white;
+      }
+      .json-details summary {
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
       pre {
         max-height: 420px;
         overflow: auto;
@@ -176,9 +210,52 @@ const ADMIN_HTML = `<!doctype html>
         font-size: 11px;
         line-height: 1.5;
       }
+      .image-field {
+        display: grid;
+        gap: 10px;
+      }
+      .dropzone {
+        border: 1.5px dashed #9fb2c2;
+        border-radius: 14px;
+        background: #f8fafc;
+        padding: 14px;
+        text-align: center;
+        color: var(--muted);
+        cursor: pointer;
+        transition: border-color 0.18s ease, background 0.18s ease;
+      }
+      .dropzone strong {
+        display: block;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .dropzone span {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+      }
+      .dropzone.dragover {
+        border-color: var(--primary);
+        background: #e6fbfe;
+      }
+      .image-preview {
+        width: 100%;
+        max-height: 160px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        object-fit: cover;
+        background: white;
+      }
       @media (max-width: 900px) {
         .wrap { grid-template-columns: 1fr; }
         .grid { grid-template-columns: 1fr; }
+        .side-panel {
+          position: static;
+          max-height: none;
+        }
+        .preview-frame {
+          height: 620px;
+        }
       }
     </style>
   </head>
@@ -221,11 +298,26 @@ const ADMIN_HTML = `<!doctype html>
 
       <div class="wrap">
         <div id="forms" class="stack"></div>
-        <aside>
-          <h2>Publication</h2>
-          <p>Apercu permet de voir les changements dans ce navigateur. Publier en ligne rend la version visible pour tout le monde.</p>
-          <div id="status" class="status hidden"></div>
-          <pre id="json"></pre>
+        <aside class="side-panel">
+          <div>
+            <div class="preview-tools">
+              <div>
+                <h2>Apercu live</h2>
+                <p>Le rendu se met a jour pendant l'edition.</p>
+              </div>
+              <button id="refresh-preview" class="secondary" type="button">Actualiser</button>
+            </div>
+            <div id="status" class="status hidden"></div>
+          </div>
+          <iframe id="live-preview" class="preview-frame" src="/?preview=1" title="Apercu du kit media"></iframe>
+          <details class="json-details">
+            <summary>JSON avance</summary>
+            <pre id="json"></pre>
+          </details>
+          <div>
+            <h2>Publication</h2>
+            <p>Publier en ligne rend la version visible pour tout le monde. Les images deposees sont envoyees automatiquement dans le site.</p>
+          </div>
         </aside>
       </div>
     </main>
@@ -240,8 +332,10 @@ const ADMIN_HTML = `<!doctype html>
       const forms = document.getElementById("forms");
       const statusBox = document.getElementById("status");
       const jsonBox = document.getElementById("json");
+      const livePreview = document.getElementById("live-preview");
       let accessCode = "";
       let content = loadDraft();
+      let previewTimer = null;
 
       function loadDraft() {
         try {
@@ -296,6 +390,7 @@ const ADMIN_HTML = `<!doctype html>
           target[key] = value;
         }
         updateJson();
+        scheduleLivePreview();
       }
 
       function labelFromKey(key) {
@@ -306,6 +401,10 @@ const ADMIN_HTML = `<!doctype html>
       }
 
       function renderPrimitive(key, value, path) {
+        if (isImageField(key, value)) {
+          return renderImageField(key, value, path);
+        }
+
         const label = document.createElement("label");
         label.textContent = labelFromKey(key);
         const input = String(value).length > 70 ? document.createElement("textarea") : document.createElement("input");
@@ -313,6 +412,85 @@ const ADMIN_HTML = `<!doctype html>
         input.addEventListener("input", function () { setByPath(path, input.value); });
         label.appendChild(input);
         return label;
+      }
+
+      function isImageField(key, value) {
+        const keyLooksLikeImage = ["image", "avatar", "logo"].includes(String(key).toLowerCase());
+        const valueLooksLikeImage = typeof value === "string" && (
+          value.startsWith("data:image/") ||
+          /\\.(png|jpe?g|webp|gif|svg)$/i.test(value)
+        );
+        return keyLooksLikeImage || valueLooksLikeImage;
+      }
+
+      function renderImageField(key, value, path) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "image-field";
+
+        const label = document.createElement("label");
+        label.textContent = labelFromKey(key);
+        const input = document.createElement("input");
+        input.value = value ?? "";
+        input.placeholder = "/media/image.png ou URL image";
+        input.addEventListener("input", function () { setByPath(path, input.value); });
+        label.appendChild(input);
+        wrapper.appendChild(label);
+
+        const img = document.createElement("img");
+        img.className = "image-preview";
+        img.alt = "Apercu image";
+        img.src = value || "/media/mih-logo.jpeg";
+        wrapper.appendChild(img);
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/png,image/jpeg,image/webp,image/gif,image/svg+xml";
+        fileInput.className = "hidden";
+
+        const dropzone = document.createElement("div");
+        dropzone.className = "dropzone";
+        dropzone.innerHTML = "<strong>Deposer une image ici</strong><span>PNG, JPG, WEBP, GIF ou SVG. Elle sera publiee avec le site.</span>";
+
+        function useFile(file) {
+          if (!file || !file.type.startsWith("image/")) {
+            showStatus("Choisis un fichier image valide.");
+            return;
+          }
+          if (file.size > 4 * 1024 * 1024) {
+            showStatus("Image trop lourde : limite 4 Mo.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function () {
+            const dataUrl = String(reader.result || "");
+            input.value = dataUrl;
+            img.src = dataUrl;
+            setByPath(path, dataUrl);
+            showStatus("Image ajoutee au brouillon. Clique sur Publier en ligne pour la rendre publique.");
+          };
+          reader.readAsDataURL(file);
+        }
+
+        fileInput.addEventListener("change", function () {
+          useFile(fileInput.files && fileInput.files[0]);
+        });
+        dropzone.addEventListener("click", function () { fileInput.click(); });
+        dropzone.addEventListener("dragover", function (event) {
+          event.preventDefault();
+          dropzone.classList.add("dragover");
+        });
+        dropzone.addEventListener("dragleave", function () {
+          dropzone.classList.remove("dragover");
+        });
+        dropzone.addEventListener("drop", function (event) {
+          event.preventDefault();
+          dropzone.classList.remove("dragover");
+          useFile(event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]);
+        });
+
+        wrapper.appendChild(fileInput);
+        wrapper.appendChild(dropzone);
+        return wrapper;
       }
 
       function renderValue(key, value, path) {
@@ -362,6 +540,19 @@ const ADMIN_HTML = `<!doctype html>
         jsonBox.textContent = JSON.stringify(content, null, 2);
       }
 
+      function refreshLivePreview() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+        if (livePreview) {
+          livePreview.src = "/?preview=1&t=" + Date.now();
+        }
+      }
+
+      function scheduleLivePreview() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(refreshLivePreview, 450);
+      }
+
       function saveDraft() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
         showStatus("Brouillon sauvegarde dans ce navigateur.");
@@ -369,8 +560,8 @@ const ADMIN_HTML = `<!doctype html>
 
       function previewDraft() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
-        window.open("/?preview=1", "_blank", "noopener,noreferrer");
-        showStatus("Apercu ouvert avec le brouillon de ce navigateur.");
+        refreshLivePreview();
+        showStatus("Apercu mis a jour.");
       }
 
       function downloadJson() {
@@ -395,6 +586,10 @@ const ADMIN_HTML = `<!doctype html>
           const result = await response.json();
           if (!response.ok) {
             throw new Error(result.error || "Publication impossible.");
+          }
+          if (result.content) {
+            content = result.content;
+            render();
           }
           localStorage.removeItem(STORAGE_KEY);
           showStatus("Publication lancee. Le site sera mis a jour dans une a deux minutes.");
@@ -429,6 +624,7 @@ const ADMIN_HTML = `<!doctype html>
       });
       document.getElementById("save").addEventListener("click", saveDraft);
       document.getElementById("preview").addEventListener("click", previewDraft);
+      document.getElementById("refresh-preview").addEventListener("click", refreshLivePreview);
       document.getElementById("download").addEventListener("click", downloadJson);
       document.getElementById("publish").addEventListener("click", publish);
       document.getElementById("reset").addEventListener("click", resetDraft);
