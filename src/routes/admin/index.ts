@@ -200,6 +200,23 @@ const ADMIN_HTML = `<!doctype html>
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
+      .ai-box {
+        display: grid;
+        gap: 10px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #f8fafc;
+        padding: 14px;
+      }
+      .ai-box p {
+        margin: 0;
+        font-size: 13px;
+      }
+      .ai-box textarea {
+        min-height: 160px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+      }
       pre {
         max-height: 420px;
         overflow: auto;
@@ -289,6 +306,7 @@ const ADMIN_HTML = `<!doctype html>
           <div class="actions">
             <button id="save" class="secondary">Sauvegarder</button>
             <button id="preview" class="secondary">Apercu</button>
+            <button id="copy-ai" class="secondary">Copier prompt IA</button>
             <button id="download" class="secondary">Telecharger JSON</button>
             <button id="publish">Publier en ligne</button>
             <button id="reset" class="danger">Reset</button>
@@ -310,6 +328,14 @@ const ADMIN_HTML = `<!doctype html>
             <div id="status" class="status hidden"></div>
           </div>
           <iframe id="live-preview" class="preview-frame" src="/?preview=1" title="Apercu du kit media"></iframe>
+          <details class="json-details">
+            <summary>Mode IA / Claude / Codex</summary>
+            <div class="ai-box">
+              <p>Copie ce bloc dans Claude ou Codex pour lui donner les bons acces sans GitHub ni Vercel.</p>
+              <textarea id="ai-prompt" readonly></textarea>
+              <button id="copy-ai-side" class="secondary" type="button">Copier le prompt IA</button>
+            </div>
+          </details>
           <details class="json-details">
             <summary>JSON avance</summary>
             <pre id="json"></pre>
@@ -333,6 +359,7 @@ const ADMIN_HTML = `<!doctype html>
       const statusBox = document.getElementById("status");
       const jsonBox = document.getElementById("json");
       const livePreview = document.getElementById("live-preview");
+      const aiPromptBox = document.getElementById("ai-prompt");
       let accessCode = "";
       let content = loadDraft();
       let previewTimer = null;
@@ -372,6 +399,7 @@ const ADMIN_HTML = `<!doctype html>
           login.classList.add("hidden");
           editor.classList.remove("hidden");
           render();
+          updateAiPrompt();
         } catch (error) {
           showStatus(error.message || "Code incorrect.", true);
         }
@@ -538,6 +566,54 @@ const ADMIN_HTML = `<!doctype html>
 
       function updateJson() {
         jsonBox.textContent = JSON.stringify(content, null, 2);
+        updateAiPrompt();
+      }
+
+      function getAiPrompt() {
+        return [
+          "Tu dois modifier le kit media MON INCROYABLE HISTOIRE directement depuis son admin, sans utiliser GitHub ni Vercel.",
+          "",
+          "URL admin : https://partenaires.monincroyablehistoire.com/admin",
+          "Code admin : " + accessCode,
+          "URL publique : https://partenaires.monincroyablehistoire.com/",
+          "",
+          "Methode simple avec navigateur :",
+          "1. Ouvre l'URL admin.",
+          "2. Entre le code admin.",
+          "3. Modifie uniquement les champs demandes.",
+          "4. Utilise l'apercu live a droite pour verifier le rendu.",
+          "5. Pour une image, depose directement le fichier dans le champ image/logo/avatar concerne.",
+          "6. Clique sur Publier en ligne quand le rendu est valide.",
+          "",
+          "Methode API si tu peux faire des requetes HTTP :",
+          "1. Lire le contenu actuel : POST https://partenaires.monincroyablehistoire.com/api/media-kit-content avec un body JSON contenant le code admin.",
+          "2. Publier : POST https://partenaires.monincroyablehistoire.com/api/update-media-kit avec un body JSON contenant le code admin et le contenu modifie.",
+          "",
+          "Regles importantes :",
+          "- Garde exactement la structure JSON existante.",
+          "- Ne supprime pas de sections sauf demande explicite.",
+          "- Ne modifie que le contenu demande : textes, chiffres, liens, images.",
+          "- Les images peuvent etre des chemins /media/... ou des data:image/...; le site les publiera automatiquement.",
+          "- Apres publication, attends 1 a 2 minutes puis verifie l'URL publique."
+        ].join("\\n");
+      }
+
+      function updateAiPrompt() {
+        if (aiPromptBox) {
+          aiPromptBox.value = getAiPrompt();
+        }
+      }
+
+      async function copyAiPrompt() {
+        updateAiPrompt();
+        try {
+          await navigator.clipboard.writeText(getAiPrompt());
+          showStatus("Prompt IA copie. Tu peux le coller dans Claude ou Codex.");
+        } catch {
+          aiPromptBox.select();
+          document.execCommand("copy");
+          showStatus("Prompt IA copie.");
+        }
       }
 
       function refreshLivePreview() {
@@ -625,6 +701,8 @@ const ADMIN_HTML = `<!doctype html>
       document.getElementById("save").addEventListener("click", saveDraft);
       document.getElementById("preview").addEventListener("click", previewDraft);
       document.getElementById("refresh-preview").addEventListener("click", refreshLivePreview);
+      document.getElementById("copy-ai").addEventListener("click", copyAiPrompt);
+      document.getElementById("copy-ai-side").addEventListener("click", copyAiPrompt);
       document.getElementById("download").addEventListener("click", downloadJson);
       document.getElementById("publish").addEventListener("click", publish);
       document.getElementById("reset").addEventListener("click", resetDraft);

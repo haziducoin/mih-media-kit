@@ -13,6 +13,7 @@ import { Route as PartenairesRouteImport } from './routes/partenaires'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiUpdateMediaKitRouteImport } from './routes/api/update-media-kit'
+import { Route as ApiMediaKitContentRouteImport } from './routes/api/media-kit-content'
 import { Route as ApiCheckAdminCodeRouteImport } from './routes/api/check-admin-code'
 import { Route as AdminConfigDotymlRouteImport } from './routes/admin/config[.]yml'
 
@@ -36,6 +37,11 @@ const ApiUpdateMediaKitRoute = ApiUpdateMediaKitRouteImport.update({
   path: '/api/update-media-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMediaKitContentRoute = ApiMediaKitContentRouteImport.update({
+  id: '/api/media-kit-content',
+  path: '/api/media-kit-content',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCheckAdminCodeRoute = ApiCheckAdminCodeRouteImport.update({
   id: '/api/check-admin-code',
   path: '/api/check-admin-code',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
+  '/api/media-kit-content': typeof ApiMediaKitContentRoute
   '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
+  '/api/media-kit-content': typeof ApiMediaKitContentRoute
   '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
+  '/api/media-kit-content': typeof ApiMediaKitContentRoute
   '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/admin/config.yml'
     | '/api/check-admin-code'
+    | '/api/media-kit-content'
     | '/api/update-media-kit'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/admin/config.yml'
     | '/api/check-admin-code'
+    | '/api/media-kit-content'
     | '/api/update-media-kit'
     | '/admin'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/partenaires'
     | '/admin/config.yml'
     | '/api/check-admin-code'
+    | '/api/media-kit-content'
     | '/api/update-media-kit'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   PartenairesRoute: typeof PartenairesRoute
   AdminConfigDotymlRoute: typeof AdminConfigDotymlRoute
   ApiCheckAdminCodeRoute: typeof ApiCheckAdminCodeRoute
+  ApiMediaKitContentRoute: typeof ApiMediaKitContentRoute
   ApiUpdateMediaKitRoute: typeof ApiUpdateMediaKitRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUpdateMediaKitRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/media-kit-content': {
+      id: '/api/media-kit-content'
+      path: '/api/media-kit-content'
+      fullPath: '/api/media-kit-content'
+      preLoaderRoute: typeof ApiMediaKitContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/check-admin-code': {
       id: '/api/check-admin-code'
       path: '/api/check-admin-code'
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   PartenairesRoute: PartenairesRoute,
   AdminConfigDotymlRoute: AdminConfigDotymlRoute,
   ApiCheckAdminCodeRoute: ApiCheckAdminCodeRoute,
+  ApiMediaKitContentRoute: ApiMediaKitContentRoute,
   ApiUpdateMediaKitRoute: ApiUpdateMediaKitRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
