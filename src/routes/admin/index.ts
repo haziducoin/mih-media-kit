@@ -211,9 +211,9 @@ const ADMIN_HTML = `<!doctype html>
           </div>
           <div class="actions">
             <button id="save" class="secondary">Sauvegarder</button>
-            <a class="button secondary" href="/" target="_blank" rel="noreferrer">Apercu</a>
+            <button id="preview" class="secondary">Apercu</button>
             <button id="download" class="secondary">Telecharger JSON</button>
-            <button id="publish">Publier</button>
+            <button id="publish">Publier en ligne</button>
             <button id="reset" class="danger">Reset</button>
           </div>
         </div>
@@ -223,7 +223,7 @@ const ADMIN_HTML = `<!doctype html>
         <div id="forms" class="stack"></div>
         <aside>
           <h2>Publication</h2>
-          <p>Sauvegarder modifie l'apercu sur ce navigateur. Publier enregistre la version officielle et redeploie le site.</p>
+          <p>Apercu permet de voir les changements dans ce navigateur. Publier en ligne rend la version visible pour tout le monde.</p>
           <div id="status" class="status hidden"></div>
           <pre id="json"></pre>
         </aside>
@@ -367,6 +367,12 @@ const ADMIN_HTML = `<!doctype html>
         showStatus("Brouillon sauvegarde dans ce navigateur.");
       }
 
+      function previewDraft() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+        window.open("/?preview=1", "_blank", "noopener,noreferrer");
+        showStatus("Apercu ouvert avec le brouillon de ce navigateur.");
+      }
+
       function downloadJson() {
         const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -393,7 +399,7 @@ const ADMIN_HTML = `<!doctype html>
           localStorage.removeItem(STORAGE_KEY);
           showStatus("Publication lancee. Le site sera mis a jour dans une a deux minutes.");
         } catch (error) {
-          showStatus(error.message || "Erreur pendant la publication.");
+          showStatus(error.message || "Publication en ligne impossible pour le moment.");
         }
       }
 
@@ -409,6 +415,7 @@ const ADMIN_HTML = `<!doctype html>
         if (event.key === "Enter") unlock();
       });
       document.getElementById("save").addEventListener("click", saveDraft);
+      document.getElementById("preview").addEventListener("click", previewDraft);
       document.getElementById("download").addEventListener("click", downloadJson);
       document.getElementById("publish").addEventListener("click", publish);
       document.getElementById("reset").addEventListener("click", resetDraft);

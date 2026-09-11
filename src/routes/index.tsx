@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Mail,
   MapPin,
@@ -13,7 +14,10 @@ import {
 } from "lucide-react";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import mediaKit from "@/content/media-kit.json";
+import defaultMediaKit from "@/content/media-kit.json";
+
+const EDITOR_DRAFT_KEY = "mih-media-kit-editor-draft";
+let mediaKit = defaultMediaKit;
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -878,6 +882,24 @@ function Footer() {
 /* ---------- Page ---------- */
 
 export function Index() {
+  const [activeMediaKit, setActiveMediaKit] = useState(defaultMediaKit);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("preview")) return;
+
+    try {
+      const draft = window.localStorage.getItem(EDITOR_DRAFT_KEY);
+      if (draft) {
+        setActiveMediaKit(JSON.parse(draft));
+      }
+    } catch {
+      setActiveMediaKit(defaultMediaKit);
+    }
+  }, []);
+
+  mediaKit = activeMediaKit;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
