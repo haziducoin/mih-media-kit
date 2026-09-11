@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PartenairesRouteImport } from './routes/partenaires'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ApiUpdateMediaKitRouteImport } from './routes/api/update-media-kit'
 import { Route as AdminConfigDotymlRouteImport } from './routes/admin/config[.]yml'
 
 const PartenairesRoute = PartenairesRouteImport.update({
@@ -29,6 +30,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUpdateMediaKitRoute = ApiUpdateMediaKitRouteImport.update({
+  id: '/api/update-media-kit',
+  path: '/api/update-media-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminConfigDotymlRoute = AdminConfigDotymlRouteImport.update({
   id: '/admin/config.yml',
   path: '/admin/config.yml',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
+  '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
+  '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,38 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
+  '/api/update-media-kit': typeof ApiUpdateMediaKitRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/partenaires' | '/admin/config.yml' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/partenaires'
+    | '/admin/config.yml'
+    | '/api/update-media-kit'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/partenaires' | '/admin/config.yml' | '/admin'
-  id: '__root__' | '/' | '/partenaires' | '/admin/config.yml' | '/admin/'
+  to:
+    | '/'
+    | '/partenaires'
+    | '/admin/config.yml'
+    | '/api/update-media-kit'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/partenaires'
+    | '/admin/config.yml'
+    | '/api/update-media-kit'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PartenairesRoute: typeof PartenairesRoute
   AdminConfigDotymlRoute: typeof AdminConfigDotymlRoute
+  ApiUpdateMediaKitRoute: typeof ApiUpdateMediaKitRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -92,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/update-media-kit': {
+      id: '/api/update-media-kit'
+      path: '/api/update-media-kit'
+      fullPath: '/api/update-media-kit'
+      preLoaderRoute: typeof ApiUpdateMediaKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/config.yml': {
       id: '/admin/config.yml'
       path: '/admin/config.yml'
@@ -106,6 +139,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PartenairesRoute: PartenairesRoute,
   AdminConfigDotymlRoute: AdminConfigDotymlRoute,
+  ApiUpdateMediaKitRoute: ApiUpdateMediaKitRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
