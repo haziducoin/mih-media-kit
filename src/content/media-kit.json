@@ -6,14 +6,30 @@
   "hero": {
     "image": "/media/mih-hero-cover.png",
     "stats": [
-      { "value": "115K", "label": "abonnés" },
-      { "value": "130K", "label": "vues / épisode" },
-      { "value": "35%", "label": "taux de rétention" },
-      { "value": "61", "label": "épisodes" }
+      {
+        "value": "150K",
+        "label": "abonnés"
+      },
+      {
+        "value": "130K",
+        "label": "vues / épisode"
+      },
+      {
+        "value": "35%",
+        "label": "taux de rétention"
+      },
+      {
+        "value": "61",
+        "label": "épisodes"
+      }
     ]
   },
   "propos": {
-    "titleLines": ["Des épreuves.", "Du courage.", "De la résilience."],
+    "titleLines": [
+      "Des épreuves.",
+      "Du courage.",
+      "De la résilience."
+    ],
     "paragraphs": [
       "Nos témoins racontent minute par minute le moment qui a bouleversé leur existence et nous embarquent dans un récit captivant et plein d'émotions.",
       "Ces interviews menées par le journaliste Jean-Charles Doria sont centrées sur des valeurs positives. Des destins hors du commun, des parcours de résilience et des leçons de vie qui inspirent et fédèrent une communauté en quête de sens et d'authenticité."
@@ -50,16 +66,37 @@
   },
   "performances": {
     "heading": "Des récits qui retiennent l'attention",
-    "bigStat": { "value": "8M", "label": "record absolu sur une vidéo" },
+    "bigStat": {
+      "value": "8M",
+      "label": "record absolu sur une vidéo"
+    },
     "comparison": [
-      { "label": "Ratio Vues / Abonnés", "mih": 105, "market": 15 },
-      { "label": "Rétention (Vidéos > 40 min)", "mih": 35, "market": 20 },
-      { "label": "Taux de Clic (CTR)", "mih": 5.5, "market": 4 }
+      {
+        "label": "Ratio Vues / Abonnés",
+        "mih": 105,
+        "market": 15
+      },
+      {
+        "label": "Rétention (Vidéos > 40 min)",
+        "mih": 35,
+        "market": 20
+      },
+      {
+        "label": "Taux de Clic (CTR)",
+        "mih": 5.5,
+        "market": 4
+      }
     ],
     "comparisonNote": "Sources marché : Benchmarks VidIQ/TubeBuddy 2025 & données officielles YouTube Creator Academy pour les formats documentaires.",
     "audienceSplit": [
-      { "name": "Hommes (25-45 ans)", "value": 55 },
-      { "name": "Femmes (25-45 ans)", "value": 45 }
+      {
+        "name": "Hommes (25-45 ans)",
+        "value": 55
+      },
+      {
+        "name": "Femmes (25-45 ans)",
+        "value": 45
+      }
     ]
   },
   "audience": {
@@ -115,23 +152,46 @@
         "id": "tiktok",
         "handle": "@monincroyablehistoire",
         "stats": [
-          { "value": "225K", "label": "Abonnés" },
-          { "value": "4,1M", "label": "Likes" },
-          { "value": "2M+", "label": "Vues / extrait" },
-          { "value": "5-7%", "label": "Taux d'engagement" }
+          {
+            "value": "225K",
+            "label": "Abonnés"
+          },
+          {
+            "value": "4,1M",
+            "label": "Likes"
+          },
+          {
+            "value": "2M+",
+            "label": "Vues / extrait"
+          },
+          {
+            "value": "5-7%",
+            "label": "Taux d'engagement"
+          }
         ]
       },
       {
         "id": "spotify",
         "handle": "Podcast Mon Incroyable Histoire",
-        "stats": [{ "value": "TOP 20", "label": "Spotify France" }]
+        "stats": [
+          {
+            "value": "TOP 20",
+            "label": "Spotify France"
+          }
+        ]
       },
       {
         "id": "instagram",
         "handle": "@monincroyablehistoire_mih",
         "stats": [
-          { "value": "13,8K", "label": "Abonnés" },
-          { "value": "3M", "label": "Vues sur les Reels" }
+          {
+            "value": "13,8K",
+            "label": "Abonnés"
+          },
+          {
+            "value": "3M",
+            "label": "Vues sur les Reels"
+          }
         ]
       }
     ]
@@ -144,12 +204,30 @@
       "L'agence produit depuis de nombreuses années des programmes (documentaires et reportages) de société pour les plus grandes chaînes TV en France et à l'international."
     ],
     "broadcasters": [
-      { "name": "TF1", "logo": "/media/broadcasters/tf1.svg" },
-      { "name": "France TV", "logo": "/media/broadcasters/france-tv.svg" },
-      { "name": "Canal+", "logo": "/media/broadcasters/canal-plus.svg" },
-      { "name": "Arte", "logo": "/media/broadcasters/arte.svg" },
-      { "name": "M6", "logo": "/media/broadcasters/m6.svg" },
-      { "name": "RMC", "logo": "/media/broadcasters/rmc.svg" }
+      {
+        "name": "TF1",
+        "logo": "/media/broadcasters/tf1.svg"
+      },
+      {
+        "name": "France TV",
+        "logo": "/media/broadcasters/france-tv.svg"
+      },
+      {
+        "name": "Canal+",
+        "logo": "/media/broadcasters/canal-plus.svg"
+      },
+      {
+        "name": "Arte",
+        "logo": "/media/broadcasters/arte.svg"
+      },
+      {
+        "name": "M6",
+        "logo": "/media/broadcasters/m6.svg"
+      },
+      {
+        "name": "RMC",
+        "logo": "/media/broadcasters/rmc.svg"
+      }
     ]
   },
   "offers": [
@@ -160,7 +238,10 @@
       "unit": "€",
       "desc": "Message court au début ou à la fin de la vidéo.",
       "example": "« Cette vidéo est soutenue par [Marque]. Allez sur [lien] »",
-      "meta": ["Durée : 30-60 secondes MAX", "Placement : pré-roll ou post-roll"],
+      "meta": [
+        "Durée : 30-60 secondes MAX",
+        "Placement : pré-roll ou post-roll"
+      ],
       "highlight": false
     },
     {
@@ -170,7 +251,10 @@
       "unit": "€",
       "desc": "La marque apparaît au milieu de l'épisode, après une respiration éditoriale.",
       "example": "L'invité évoque un usage concret, dans le fil de son histoire.",
-      "meta": ["Durée : 60-90 secondes MAX", "Placement : mid-roll"],
+      "meta": [
+        "Durée : 60-90 secondes MAX",
+        "Placement : mid-roll"
+      ],
       "highlight": true
     },
     {
@@ -180,7 +264,10 @@
       "unit": "€",
       "desc": "1 présence dans l'épisode + 3 à 4 Shorts TikTok autour du même partenaire.",
       "example": "Une même campagne touche YouTube et TikTok sans changer de territoire.",
-      "meta": ["1 vidéo 60-90 sec", "3-4 Shorts de 15-30 sec"],
+      "meta": [
+        "1 vidéo 60-90 sec",
+        "3-4 Shorts de 15-30 sec"
+      ],
       "highlight": false
     },
     {
@@ -190,7 +277,9 @@
       "unit": "",
       "desc": "Une présence installée sur plusieurs épisodes, pensée pour la répétition et la confiance.",
       "example": "Deux prises de parole séparées, avec une cohérence éditoriale sur la durée.",
-      "meta": ["Intégrations multiples non consécutives"],
+      "meta": [
+        "Intégrations multiples non consécutives"
+      ],
       "highlight": false
     }
   ],
@@ -221,7 +310,10 @@
     "addressName": "Tony Comiti Media — MIH Mon Incroyable Histoire",
     "addressLine": "69 avenue Pierre Grenier, 92100 Boulogne Billancourt",
     "socials": [
-      { "id": "youtube", "handle": "Playlist MIH" },
+      {
+        "id": "youtube",
+        "handle": "Playlist MIH"
+      },
       {
         "id": "tiktok",
         "handle": "@monincroyablehistoire",
