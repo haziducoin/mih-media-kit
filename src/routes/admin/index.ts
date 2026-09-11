@@ -264,9 +264,23 @@ const ADMIN_HTML = `<!doctype html>
           showStatus("Entre le code d'acces.", true);
           return;
         }
-        login.classList.add("hidden");
-        editor.classList.remove("hidden");
-        render();
+
+        try {
+          const response = await fetch("/api/check-admin-code", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ code: accessCode })
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || "Code incorrect.");
+          }
+          login.classList.add("hidden");
+          editor.classList.remove("hidden");
+          render();
+        } catch (error) {
+          showStatus(error.message || "Code incorrect.", true);
+        }
       }
 
       function setByPath(path, value) {
