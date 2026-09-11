@@ -404,10 +404,23 @@ const ADMIN_HTML = `<!doctype html>
       }
 
       function resetDraft() {
+        const firstConfirm = window.confirm(
+          "Attention : cette action supprime toutes les modifications non publiees sauvegardees dans ce navigateur. Le site public ne sera pas modifie. Continuer ?"
+        );
+        if (!firstConfirm) return;
+
+        const typedConfirm = window.prompt(
+          "Pour confirmer le reset du brouillon local, ecris exactement RESET."
+        );
+        if (typedConfirm !== "RESET") {
+          showStatus("Reset annule. Le brouillon n'a pas ete modifie.");
+          return;
+        }
+
         localStorage.removeItem(STORAGE_KEY);
         content = structuredClone(INITIAL_CONTENT);
         render();
-        showStatus("Brouillon reinitialise.");
+        showStatus("Brouillon local reinitialise. Le site public n'a pas ete modifie.");
       }
 
       document.getElementById("unlock").addEventListener("click", unlock);
