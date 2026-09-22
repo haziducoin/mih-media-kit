@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SansTarifRouteImport } from './routes/sans-tarif'
 import { Route as PartenairesRouteImport } from './routes/partenaires'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
@@ -17,6 +18,11 @@ import { Route as ApiMediaKitContentRouteImport } from './routes/api/media-kit-c
 import { Route as ApiCheckAdminCodeRouteImport } from './routes/api/check-admin-code'
 import { Route as AdminConfigDotymlRouteImport } from './routes/admin/config[.]yml'
 
+const SansTarifRoute = SansTarifRouteImport.update({
+  id: '/sans-tarif',
+  path: '/sans-tarif',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PartenairesRoute = PartenairesRouteImport.update({
   id: '/partenaires',
   path: '/partenaires',
@@ -56,6 +62,7 @@ const AdminConfigDotymlRoute = AdminConfigDotymlRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
+  '/sans-tarif': typeof SansTarifRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
   '/api/media-kit-content': typeof ApiMediaKitContentRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
+  '/sans-tarif': typeof SansTarifRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
   '/api/media-kit-content': typeof ApiMediaKitContentRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/partenaires': typeof PartenairesRoute
+  '/sans-tarif': typeof SansTarifRoute
   '/admin/config.yml': typeof AdminConfigDotymlRoute
   '/api/check-admin-code': typeof ApiCheckAdminCodeRoute
   '/api/media-kit-content': typeof ApiMediaKitContentRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/partenaires'
+    | '/sans-tarif'
     | '/admin/config.yml'
     | '/api/check-admin-code'
     | '/api/media-kit-content'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/partenaires'
+    | '/sans-tarif'
     | '/admin/config.yml'
     | '/api/check-admin-code'
     | '/api/media-kit-content'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/partenaires'
+    | '/sans-tarif'
     | '/admin/config.yml'
     | '/api/check-admin-code'
     | '/api/media-kit-content'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PartenairesRoute: typeof PartenairesRoute
+  SansTarifRoute: typeof SansTarifRoute
   AdminConfigDotymlRoute: typeof AdminConfigDotymlRoute
   ApiCheckAdminCodeRoute: typeof ApiCheckAdminCodeRoute
   ApiMediaKitContentRoute: typeof ApiMediaKitContentRoute
@@ -123,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sans-tarif': {
+      id: '/sans-tarif'
+      path: '/sans-tarif'
+      fullPath: '/sans-tarif'
+      preLoaderRoute: typeof SansTarifRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/partenaires': {
       id: '/partenaires'
       path: '/partenaires'
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PartenairesRoute: PartenairesRoute,
+  SansTarifRoute: SansTarifRoute,
   AdminConfigDotymlRoute: AdminConfigDotymlRoute,
   ApiCheckAdminCodeRoute: ApiCheckAdminCodeRoute,
   ApiMediaKitContentRoute: ApiMediaKitContentRoute,

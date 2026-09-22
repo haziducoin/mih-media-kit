@@ -682,7 +682,7 @@ function Expertise() {
   );
 }
 
-function Offers() {
+function Offers({ showPrices = true }: { showPrices?: boolean }) {
   const { offers, links } = mediaKit;
 
   return (
@@ -690,7 +690,7 @@ function Offers() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-3xl">
           <SectionTag className="px-5 py-2 text-sm md:px-6 md:py-2.5 md:text-base">
-            Notre Offre & Tarifs
+            {showPrices ? "Notre Offre & Tarifs" : "Notre Offre"}
           </SectionTag>
         </div>
 
@@ -714,19 +714,21 @@ function Offers() {
                 {o.title}
               </h3>
 
-              <div className="mt-6">
-                <span className="font-display text-4xl font-bold text-primary">{o.price}</span>
-                {o.unit && (
-                  <span className="ml-1 align-baseline text-2xl font-bold text-primary">
-                    {o.unit}
-                  </span>
-                )}
-                {o.price !== "Sur devis" && (
-                  <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    HT
-                  </span>
-                )}
-              </div>
+              {showPrices && (
+                <div className="mt-6">
+                  <span className="font-display text-4xl font-bold text-primary">{o.price}</span>
+                  {o.unit && (
+                    <span className="ml-1 align-baseline text-2xl font-bold text-primary">
+                      {o.unit}
+                    </span>
+                  )}
+                  {o.price !== "Sur devis" && (
+                    <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      HT
+                    </span>
+                  )}
+                </div>
+              )}
 
               <p className="mt-5 text-sm text-muted-foreground">{o.desc}</p>
 
@@ -881,7 +883,7 @@ function Footer() {
 
 /* ---------- Page ---------- */
 
-export function Index() {
+export function Index({ showPrices = true }: { showPrices?: boolean }) {
   const [activeMediaKit, setActiveMediaKit] = useState(defaultMediaKit);
 
   useEffect(() => {
@@ -911,7 +913,7 @@ export function Index() {
         <Audience />
         <Acquisition />
         <Expertise />
-        <Offers />
+        <Offers showPrices={showPrices} />
         <InstagramReels />
         <Contact />
       </main>
