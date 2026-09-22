@@ -56,7 +56,7 @@ function SectionTag({
 
 /* ---------- Header ---------- */
 
-function Header() {
+function Header({ showOffers = true }: { showOffers?: boolean }) {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3 md:px-6">
@@ -79,12 +79,14 @@ function Header() {
           >
             Performances
           </a>
-          <a
-            href="#offres"
-            className="rounded-full px-2.5 py-2 transition hover:bg-secondary hover:text-foreground sm:px-4"
-          >
-            Offres
-          </a>
+          {showOffers && (
+            <a
+              href="#offres"
+              className="rounded-full px-2.5 py-2 transition hover:bg-secondary hover:text-foreground sm:px-4"
+            >
+              Offres
+            </a>
+          )}
           <a
             href="#contact"
             className="rounded-full px-2.5 py-2 transition hover:bg-secondary hover:text-foreground sm:px-4"
@@ -105,7 +107,7 @@ function Header() {
 
 /* ---------- 1. Hero ---------- */
 
-function Hero() {
+function Hero({ showOffers = true }: { showOffers?: boolean }) {
   const { hero, links } = mediaKit;
 
   return (
@@ -148,12 +150,14 @@ function Hero() {
             >
               Voir la playlist <Youtube className="size-4" />
             </a>
-            <a
-              href="#offres"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-primary"
-            >
-              Découvrir nos offres <ArrowRight className="size-4" />
-            </a>
+            {showOffers && (
+              <a
+                href="#offres"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-primary"
+              >
+                Découvrir nos offres <ArrowRight className="size-4" />
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -682,7 +686,7 @@ function Expertise() {
   );
 }
 
-function Offers({ showPrices = true }: { showPrices?: boolean }) {
+function Offers() {
   const { offers, links } = mediaKit;
 
   return (
@@ -690,7 +694,7 @@ function Offers({ showPrices = true }: { showPrices?: boolean }) {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-3xl">
           <SectionTag className="px-5 py-2 text-sm md:px-6 md:py-2.5 md:text-base">
-            {showPrices ? "Notre Offre & Tarifs" : "Notre Offre"}
+            Notre Offre & Tarifs
           </SectionTag>
         </div>
 
@@ -714,21 +718,19 @@ function Offers({ showPrices = true }: { showPrices?: boolean }) {
                 {o.title}
               </h3>
 
-              {showPrices && (
-                <div className="mt-6">
-                  <span className="font-display text-4xl font-bold text-primary">{o.price}</span>
-                  {o.unit && (
-                    <span className="ml-1 align-baseline text-2xl font-bold text-primary">
-                      {o.unit}
-                    </span>
-                  )}
-                  {o.price !== "Sur devis" && (
-                    <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      HT
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="mt-6">
+                <span className="font-display text-4xl font-bold text-primary">{o.price}</span>
+                {o.unit && (
+                  <span className="ml-1 align-baseline text-2xl font-bold text-primary">
+                    {o.unit}
+                  </span>
+                )}
+                {o.price !== "Sur devis" && (
+                  <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    HT
+                  </span>
+                )}
+              </div>
 
               <p className="mt-5 text-sm text-muted-foreground">{o.desc}</p>
 
@@ -883,7 +885,7 @@ function Footer() {
 
 /* ---------- Page ---------- */
 
-export function Index({ showPrices = true }: { showPrices?: boolean }) {
+export function Index({ showOffers = true }: { showOffers?: boolean }) {
   const [activeMediaKit, setActiveMediaKit] = useState(defaultMediaKit);
 
   useEffect(() => {
@@ -904,16 +906,16 @@ export function Index({ showPrices = true }: { showPrices?: boolean }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      <Header showOffers={showOffers} />
       <main>
-        <Hero />
+        <Hero showOffers={showOffers} />
         <Concept />
         <Propos />
         <Performances />
         <Audience />
         <Acquisition />
         <Expertise />
-        <Offers showPrices={showPrices} />
+        {showOffers && <Offers />}
         <InstagramReels />
         <Contact />
       </main>

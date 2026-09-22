@@ -18,5 +18,5 @@ export const Route = createFileRoute("/sans-tarif")({
 });
 
 function SansTarif() {
-  return <Index showPrices={false} />;
+  return <Index showOffers={false} />;
 }
