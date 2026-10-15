@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Mail,
   MapPin,
@@ -604,6 +604,46 @@ function Acquisition() {
 
 /* ---------- 7. Reels & Offres ---------- */
 
+// "#t=0.1" : sans ça, Safari iOS laisse la vidéo noire jusqu'à la lecture.
+// Fichier absent (reel changé dans l'admin sans vidéo) : lien vers Instagram.
+function ReelVideo({ video, url }: { video: string; url: string }) {
+  const [failed, setFailed] = useState(!video);
+  const ref = useRef<HTMLVideoElement>(null);
+
+  // L'erreur peut arriver avant l'hydratation React (rendu serveur) : on la relit au montage.
+  useEffect(() => {
+    if (ref.current?.error) setFailed(true);
+  }, []);
+
+  if (failed) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex aspect-[9/16] w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white"
+      >
+        <Instagram className="size-12" />
+        <span className="text-sm font-semibold">Voir le reel sur Instagram</span>
+      </a>
+    );
+  }
+
+  return (
+    <div className="bg-black">
+      <video
+        ref={ref}
+        src={video.includes("#") ? video : `${video}#t=0.1`}
+        className="aspect-[9/16] w-full bg-black object-cover"
+        controls
+        preload="metadata"
+        playsInline
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
 function InstagramReels() {
   const { reels } = mediaKit;
 
@@ -639,15 +679,7 @@ function InstagramReels() {
                   Reel {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <div className="bg-black">
-                <video
-                  src={reel.video}
-                  className="aspect-[9/16] w-full bg-black object-cover"
-                  controls
-                  preload="metadata"
-                  playsInline
-                />
-              </div>
+              <ReelVideo video={reel.video} url={reel.url} />
               <a
                 href={reel.url}
                 target="_blank"
