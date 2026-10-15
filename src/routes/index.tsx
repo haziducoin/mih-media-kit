@@ -111,23 +111,23 @@ function Hero({ showOffers = true }: { showOffers?: boolean }) {
   const { hero, links } = mediaKit;
 
   return (
-    <section className="relative min-h-[calc(100vh-4.5rem)] overflow-hidden bg-[#061219] text-white">
+    <section className="relative min-h-[calc(100vh-4.5rem)] overflow-hidden bg-[#061219] text-white max-md:min-h-0">
       <a
         href={links.youtubePlaylistUrl}
         target="_blank"
         rel="noreferrer"
-        className="absolute inset-0 block"
+        className="absolute inset-0 block max-md:relative"
         aria-label="Voir la playlist MIH sur YouTube"
       >
         <img
           src={hero.image}
           alt="MIH - Mon Incroyable Histoire"
-          className="size-full object-contain object-top"
+          className="size-full object-contain object-top max-md:h-auto"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#061219]/90 via-[#061219]/10 to-transparent" />
       </a>
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-7xl items-end px-5 pb-10 pt-40 md:px-6 md:pb-14">
+      <div className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-7xl items-end px-5 pb-10 pt-40 md:px-6 md:pb-14 max-md:min-h-0 max-md:pt-2">
         <div className="w-full">
           <div className="grid max-w-3xl grid-cols-2 gap-3 border-y border-white/20 bg-[#061219]/60 py-5 backdrop-blur md:max-w-5xl md:grid-cols-4">
             {hero.stats.map((stat) => (
@@ -275,7 +275,7 @@ function Performances() {
   return (
     <section id="chiffres" className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="rounded-2xl bg-[#061219] p-7 text-white md:p-10">
+        <div className="rounded-2xl bg-[#061219] p-7 text-white md:p-10 max-md:p-5">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
             <div>
               <SectionTag>Performances</SectionTag>
@@ -284,8 +284,8 @@ function Performances() {
               </h2>
             </div>
             <div className="overflow-hidden rounded-xl border border-white/10 bg-white/10">
-              <div className="bg-[#061219] p-6 md:p-8">
-                <div className="font-display text-7xl font-bold leading-none text-primary md:text-8xl">
+              <div className="bg-[#061219] p-6 md:p-8 max-md:p-5">
+                <div className="font-display text-7xl font-bold leading-none text-primary md:text-8xl max-md:text-[clamp(2.25rem,12vw,4.5rem)]">
                   {performances.bigStat.value}
                 </div>
                 <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-white/55 md:text-sm">
@@ -695,7 +695,7 @@ function Expertise() {
                     <img
                       src={logo.logo}
                       alt={`Logo ${logo.name}`}
-                      className="max-h-7 max-w-[7.5rem] object-contain"
+                      className="max-h-7 max-w-[7.5rem] object-contain max-md:h-7 max-md:w-auto"
                     />
                   </div>
                 ))}
@@ -807,7 +807,7 @@ function Contact() {
   return (
     <section id="contact" className="bg-primary py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="overflow-hidden rounded-3xl bg-[#061219] p-10 text-white md:p-16">
+        <div className="overflow-hidden rounded-3xl bg-[#061219] p-10 text-white md:p-16 max-md:p-6">
           <div className="grid gap-12 lg:grid-cols-2">
             <div>
               <SectionTag>Contact</SectionTag>
@@ -819,7 +819,7 @@ function Contact() {
                 href={links.calendarUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-white hover:text-foreground"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-4 text-sm font-bold max-md:w-full max-md:justify-center max-md:px-5 max-md:text-center text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-white hover:text-foreground"
               >
                 Prendre rendez-vous avec notre commercial
                 <ArrowRight className="size-4" />
@@ -832,7 +832,10 @@ function Contact() {
                   </div>
                   <div>
                     <div className="text-xs uppercase tracking-wider opacity-70">Commercial</div>
-                    <a href={`mailto:${contact.email}`} className="font-semibold hover:underline">
+                    <a
+                      href={`mailto:${contact.email}`}
+                      className="font-semibold hover:underline max-md:break-all"
+                    >
                       {contact.email}
                     </a>
                     <div className="text-sm opacity-80">L'équipe commerciale MIH</div>
@@ -864,7 +867,7 @@ function Contact() {
                     href={href}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 p-5 transition hover:-translate-y-0.5 hover:bg-white/10"
+                    className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 p-5 max-md:gap-3 max-md:p-4 transition hover:-translate-y-0.5 hover:bg-white/10"
                   >
                     <div className="flex items-center gap-4">
                       <div className="grid size-11 place-items-center rounded-xl bg-white/15">
