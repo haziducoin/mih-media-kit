@@ -355,7 +355,9 @@ const ADMIN_HTML = `<!doctype html>
     </main>
 
     <script>
-      const INITIAL_CONTENT = ${safeInitialContent};
+      // Contenu du dernier deploiement ; remplace a l'ouverture par la version la plus
+      // recente publiee (une publication met 1 a 2 min a etre deployee).
+      let INITIAL_CONTENT = ${safeInitialContent};
       const STORAGE_KEY = "mih-media-kit-editor-draft";
       const login = document.getElementById("login");
       const editor = document.getElementById("editor");
@@ -367,12 +369,12 @@ const ADMIN_HTML = `<!doctype html>
       const livePreview = document.getElementById("live-preview");
       const aiPromptBox = document.getElementById("ai-prompt");
       let accessCode = "";
-      let content = loadDraft();
       let previewTimer = null;
 
       const BASE_KEY = "mih-media-kit-editor-base";
-      const INITIAL_JSON = JSON.stringify(INITIAL_CONTENT);
+      let INITIAL_JSON = JSON.stringify(INITIAL_CONTENT);
       let staleDraftIgnored = false;
+      let content = null;
 
       // Un brouillon commence sur une version publiee : si le site a change depuis
       // (autre publication), on l'ignore pour ne pas ecraser la version en ligne.
@@ -382,17 +384,45 @@ const ADMIN_HTML = `<!doctype html>
           if (stored && localStorage.getItem(BASE_KEY) === INITIAL_JSON) {
             return JSON.parse(stored);
           }
-          if (stored) staleDraftIgnored = true;
+          if (stored) staleDraftIgnored = stored !== INITIAL_JSON;
           localStorage.removeItem(STORAGE_KEY);
           localStorage.setItem(BASE_KEY, INITIAL_JSON);
         } catch {}
         return structuredClone(INITIAL_CONTENT);
       }
 
+      // Le panneau de statut est tout en bas sur telephone : on double avec un toast visible.
       function showStatus(message, isLogin) {
         const box = isLogin ? loginStatus : statusBox;
         box.textContent = message;
         box.classList.remove("hidden");
+        if (!isLogin) showToast(message);
+      }
+
+      async function readJson(response) {
+        try {
+          return await response.json();
+        } catch {
+          return { error: response.status === 413
+            ? "Envoi trop lourd (images). Reduis ou remplace les images puis reessaie."
+            : "Le serveur a repondu une erreur (" + response.status + "). Reessaie dans une minute." };
+        }
+      }
+
+      async function loadLatestContent() {
+        try {
+          const response = await fetch("/api/media-kit-content", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ code: accessCode }),
+            cache: "no-store"
+          });
+          const result = await readJson(response);
+          if (response.ok && result.content) {
+            INITIAL_CONTENT = result.content;
+            INITIAL_JSON = JSON.stringify(INITIAL_CONTENT);
+          }
+        } catch {}
       }
 
       async function unlock() {
@@ -408,10 +438,12 @@ const ADMIN_HTML = `<!doctype html>
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ code: accessCode })
           });
-          const result = await response.json();
+          const result = await readJson(response);
           if (!response.ok) {
             throw new Error(result.error || "Code incorrect.");
           }
+          await loadLatestContent();
+          content = loadDraft();
           login.classList.add("hidden");
           editor.classList.remove("hidden");
           render();
@@ -561,6 +593,28 @@ const ADMIN_HTML = `<!doctype html>
         return label;
       }
 
+      // Les photos de telephone (souvent 3-10 Mo) depassent la limite d'envoi :
+      // on les redimensionne (1920 px max) et recompresse avant de les ajouter.
+      function shrinkImage(dataUrl, type) {
+        if (["image/png", "image/jpeg", "image/webp"].indexOf(type) === -1) return Promise.resolve(dataUrl);
+        return new Promise(function (resolve) {
+          const image = new Image();
+          image.onload = function () {
+            const scale = Math.min(1, 1920 / Math.max(image.width, image.height));
+            if (scale === 1 && dataUrl.length < 1500000) return resolve(dataUrl);
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.round(image.width * scale);
+            canvas.height = Math.round(image.height * scale);
+            canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+            let output = canvas.toDataURL(type === "image/png" ? "image/png" : "image/jpeg", 0.85);
+            if (output.length > 2000000) output = canvas.toDataURL("image/jpeg", 0.85);
+            resolve(output.length < dataUrl.length ? output : dataUrl);
+          };
+          image.onerror = function () { resolve(dataUrl); };
+          image.src = dataUrl;
+        });
+      }
+
       function isImageField(key, value) {
         const keyLooksLikeImage = ["image", "avatar", "logo"].includes(String(key).toLowerCase());
         const valueLooksLikeImage = typeof value === "string" && (
@@ -603,13 +657,13 @@ const ADMIN_HTML = `<!doctype html>
             showStatus("Choisis un fichier image valide.");
             return;
           }
-          if (file.size > 4 * 1024 * 1024) {
-            showStatus("Image trop lourde : limite 4 Mo.");
-            return;
-          }
           const reader = new FileReader();
-          reader.onload = function () {
-            const dataUrl = String(reader.result || "");
+          reader.onload = async function () {
+            const dataUrl = await shrinkImage(String(reader.result || ""), file.type);
+            if (dataUrl.length > 3500000) {
+              showStatus("Image trop lourde meme apres compression. Choisis une image plus petite.");
+              return;
+            }
             input.value = dataUrl;
             img.src = dataUrl;
             setByPath(path, dataUrl);
@@ -794,14 +848,21 @@ const ADMIN_HTML = `<!doctype html>
       }
 
       async function publish() {
+        const publishButton = document.getElementById("publish");
+        const body = JSON.stringify({ code: accessCode, content });
+        if (body.length > 4200000) {
+          showStatus("Trop d'images nouvelles d'un coup (limite ~4 Mo par publication). Publie-les en plusieurs fois.");
+          return;
+        }
+        publishButton.disabled = true;
         showStatus("Publication en cours...");
         try {
           const response = await fetch("/api/update-media-kit", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ code: accessCode, content })
+            body
           });
-          const result = await response.json();
+          const result = await readJson(response);
           if (!response.ok) {
             throw new Error(result.error || "Publication impossible.");
           }
@@ -810,10 +871,14 @@ const ADMIN_HTML = `<!doctype html>
             render();
           }
           localStorage.removeItem(STORAGE_KEY);
-          localStorage.setItem(BASE_KEY, JSON.stringify(content));
+          INITIAL_CONTENT = content;
+          INITIAL_JSON = JSON.stringify(content);
+          localStorage.setItem(BASE_KEY, INITIAL_JSON);
           showStatus("Publication lancee. Le site sera mis a jour dans une a deux minutes.");
         } catch (error) {
           showStatus(error.message || "Publication en ligne impossible pour le moment.");
+        } finally {
+          publishButton.disabled = false;
         }
       }
 

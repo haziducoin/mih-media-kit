@@ -623,18 +623,22 @@ function ReelVideo({ id, video, url }: { id: string; video?: string; url: string
     if (ref.current?.error) setFailed(true);
   }, []);
 
+  // Lecteur Instagram recadré sur la vidéo seule (en-tête de 54 px, vidéo en 4:5,
+  // likes/commentaires en dessous) pour ressembler aux autres reels.
   if (failed || !video) {
     return (
-      <div className="aspect-[9/16] w-full overflow-hidden bg-white">
-        <iframe
-          src={`https://www.instagram.com/reel/${reelId}/embed/`}
-          title={`Reel Instagram ${reelId}`}
-          className="size-full border-0"
-          loading="lazy"
-          scrolling="no"
-          allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
-          allowFullScreen
-        />
+      <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
+        <div className="absolute inset-x-0 top-1/2 aspect-[4/5] -translate-y-1/2 overflow-hidden">
+          <iframe
+            src={`https://www.instagram.com/reel/${reelId}/embed/`}
+            title={`Reel Instagram ${reelId}`}
+            className="absolute left-0 top-[-54px] h-[calc(100%+300px)] w-full border-0"
+            loading="lazy"
+            scrolling="no"
+            allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
+            allowFullScreen
+          />
+        </div>
       </div>
     );
   }
