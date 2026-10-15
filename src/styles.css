@@ -78,3 +78,15 @@
     letter-spacing: -0.02em;
   }
 }
+
+/* Mobile uniquement (< 768px) : empêche les grilles/flex de déborder à cause
+   de longs mots (pseudos, emails). N'affecte pas la version ordinateur. */
+@media (max-width: 767.98px) {
+  main .grid > *,
+  main .flex > * {
+    min-width: 0;
+  }
+  main {
+    overflow-wrap: break-word;
+  }
+}
