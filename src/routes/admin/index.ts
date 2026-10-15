@@ -84,6 +84,10 @@ const ADMIN_HTML = `<!doctype html>
         color: var(--text);
       }
       button.danger { background: #b91c1c; }
+      .item { display: grid; gap: 8px; }
+      .item-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+      .item-tools button { padding: 6px 10px; font-size: 12px; }
+      .hint { margin: 0; font-size: 12px; }
       button:disabled { cursor: not-allowed; opacity: 0.55; }
       .login {
         min-height: 100vh;
@@ -364,13 +368,23 @@ const ADMIN_HTML = `<!doctype html>
       let content = loadDraft();
       let previewTimer = null;
 
+      const BASE_KEY = "mih-media-kit-editor-base";
+      const INITIAL_JSON = JSON.stringify(INITIAL_CONTENT);
+      let staleDraftIgnored = false;
+
+      // Un brouillon commence sur une version publiee : si le site a change depuis
+      // (autre publication), on l'ignore pour ne pas ecraser la version en ligne.
       function loadDraft() {
         try {
           const stored = localStorage.getItem(STORAGE_KEY);
-          return stored ? JSON.parse(stored) : structuredClone(INITIAL_CONTENT);
-        } catch {
-          return structuredClone(INITIAL_CONTENT);
-        }
+          if (stored && localStorage.getItem(BASE_KEY) === INITIAL_JSON) {
+            return JSON.parse(stored);
+          }
+          if (stored) staleDraftIgnored = true;
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.setItem(BASE_KEY, INITIAL_JSON);
+        } catch {}
+        return structuredClone(INITIAL_CONTENT);
       }
 
       function showStatus(message, isLogin) {
@@ -400,6 +414,9 @@ const ADMIN_HTML = `<!doctype html>
           editor.classList.remove("hidden");
           render();
           updateAiPrompt();
+          if (staleDraftIgnored) {
+            showStatus("Le site a ete mis a jour depuis ton dernier brouillon : l'editeur repart de la version en ligne.");
+          }
         } catch (error) {
           showStatus(error.message || "Code incorrect.", true);
         }
@@ -420,6 +437,55 @@ const ADMIN_HTML = `<!doctype html>
         updateJson();
         scheduleLivePreview();
       }
+
+      function getByPath(path) {
+        return path.reduce(function (target, key) { return target[key]; }, content);
+      }
+
+      // Nouvel element au meme format que le dernier, avec des champs vides.
+      function blankLike(value) {
+        if (Array.isArray(value)) return value.slice(0, 1).map(blankLike);
+        if (value && typeof value === "object") {
+          const next = {};
+          Object.keys(value).forEach(function (key) { next[key] = blankLike(value[key]); });
+          return next;
+        }
+        if (typeof value === "number") return 0;
+        if (typeof value === "boolean") return false;
+        return "";
+      }
+
+      function changeList(path, action, index) {
+        const list = getByPath(path);
+        if (action === "up" && index > 0) {
+          list.splice(index - 1, 0, list.splice(index, 1)[0]);
+        } else if (action === "down" && index < list.length - 1) {
+          list.splice(index + 1, 0, list.splice(index, 1)[0]);
+        } else if (action === "add") {
+          list.push(list.length ? blankLike(list[list.length - 1]) : "");
+        } else if (action === "remove") {
+          if (!window.confirm("Supprimer cet element ?")) return;
+          list.splice(index, 1);
+        } else {
+          return;
+        }
+        render();
+        scheduleLivePreview();
+      }
+
+      function toolButton(text, onClick, className) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className || "secondary";
+        button.textContent = text;
+        button.addEventListener("click", onClick);
+        return button;
+      }
+
+      const HINTS = {
+        sectionOrder: "Ordre d'affichage des sections sur le site. Utilise Monter / Descendre pour les deplacer. Noms possibles : hero, concept, propos, performances, audience, acquisition, expertise, offers, reels, contact.",
+        platforms: "Champ Id = plateforme : tiktok, spotify, instagram ou facebook (logo et couleur automatiques)."
+      };
 
       function labelFromKey(key) {
         return String(key)
@@ -531,13 +597,32 @@ const ADMIN_HTML = `<!doctype html>
         const title = document.createElement("h3");
         title.textContent = labelFromKey(key);
         block.appendChild(title);
+        if (HINTS[key]) {
+          const hint = document.createElement("p");
+          hint.className = "hint";
+          hint.textContent = HINTS[key];
+          block.appendChild(hint);
+        }
         const fields = document.createElement("div");
         fields.className = "fields";
 
         if (Array.isArray(value)) {
           value.forEach(function (item, index) {
-            fields.appendChild(renderValue(key + " " + (index + 1), item, path.concat(index)));
+            const wrapper = document.createElement("div");
+            wrapper.className = "item";
+            const tools = document.createElement("div");
+            tools.className = "item-tools";
+            tools.appendChild(toolButton("Monter", function () { changeList(path, "up", index); }));
+            tools.appendChild(toolButton("Descendre", function () { changeList(path, "down", index); }));
+            tools.appendChild(toolButton("Supprimer", function () { changeList(path, "remove", index); }, "danger"));
+            wrapper.appendChild(tools);
+            wrapper.appendChild(renderValue(key + " " + (index + 1), item, path.concat(index)));
+            fields.appendChild(wrapper);
           });
+          const addTools = document.createElement("div");
+          addTools.className = "item-tools";
+          addTools.appendChild(toolButton("+ Ajouter " + labelFromKey(key).toLowerCase(), function () { changeList(path, "add"); }));
+          fields.appendChild(addTools);
         } else {
           Object.keys(value).forEach(function (childKey) {
             fields.appendChild(renderValue(childKey, value[childKey], path.concat(childKey)));
@@ -593,6 +678,8 @@ const ADMIN_HTML = `<!doctype html>
           "- Garde exactement la structure JSON existante.",
           "- Ne supprime pas de sections sauf demande explicite.",
           "- Ne modifie que le contenu demande : textes, chiffres, liens, images.",
+          "- Ordre des sections : liste sectionOrder (boutons Monter / Descendre dans l'editeur).",
+          "- Listes (plateformes, chiffres...) : boutons Monter / Descendre / Supprimer / + Ajouter. Plateformes reconnues (champ id) : tiktok, spotify, instagram, facebook.",
           "- Les images peuvent etre des chemins /media/... ou des data:image/...; le site les publiera automatiquement.",
           "- Apres publication, attends 1 a 2 minutes puis verifie l'URL publique."
         ].join("\\n");
@@ -668,6 +755,7 @@ const ADMIN_HTML = `<!doctype html>
             render();
           }
           localStorage.removeItem(STORAGE_KEY);
+          localStorage.setItem(BASE_KEY, JSON.stringify(content));
           showStatus("Publication lancee. Le site sera mis a jour dans une a deux minutes.");
         } catch (error) {
           showStatus(error.message || "Publication en ligne impossible pour le moment.");
@@ -689,6 +777,7 @@ const ADMIN_HTML = `<!doctype html>
         }
 
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem(BASE_KEY, INITIAL_JSON);
         content = structuredClone(INITIAL_CONTENT);
         render();
         showStatus("Brouillon local reinitialise. Le site public n'a pas ete modifie.");
