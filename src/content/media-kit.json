@@ -3,6 +3,18 @@
     "youtubePlaylistUrl": "https://www.youtube.com/playlist?list=PLyzqvdCqSk_lwjj3ZDqUhZr5faSfnjbE6",
     "calendarUrl": "https://cal.com/monincroyablehistoire/15min"
   },
+  "sectionOrder": [
+    "hero",
+    "acquisition",
+    "concept",
+    "propos",
+    "performances",
+    "audience",
+    "expertise",
+    "offers",
+    "reels",
+    "contact"
+  ],
   "hero": {
     "image": "/media/mih-hero-cover.png",
     "stats": [
@@ -149,6 +161,16 @@
     "note": "Les extraits courts créent de la découverte, puis renvoient vers YouTube / Spotify / Apple Podcast.",
     "platforms": [
       {
+        "id": "spotify",
+        "handle": "Podcast Mon Incroyable Histoire",
+        "stats": [
+          {
+            "value": "TOP 3",
+            "label": "MEILLEUR CLASSEMENT"
+          }
+        ]
+      },
+      {
         "id": "tiktok",
         "handle": "@monincroyablehistoire",
         "stats": [
@@ -171,16 +193,6 @@
         ]
       },
       {
-        "id": "spotify",
-        "handle": "Podcast Mon Incroyable Histoire",
-        "stats": [
-          {
-            "value": "TOP 3",
-            "label": "MEILLEUR CLASSEMENT"
-          }
-        ]
-      },
-      {
         "id": "instagram",
         "handle": "@monincroyablehistoire_mih",
         "stats": [
@@ -191,6 +203,16 @@
           {
             "value": "3M",
             "label": "Vues sur les Reels"
+          }
+        ]
+      },
+      {
+        "id": "facebook",
+        "handle": "@monincroyablehistoiremedia",
+        "stats": [
+          {
+            "value": "85K",
+            "label": "Abonnés"
           }
         ]
       }

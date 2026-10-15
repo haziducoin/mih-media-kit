@@ -146,7 +146,7 @@ collections:
                   - label: "Plateforme"
                     name: "id"
                     widget: "select"
-                    options: ["tiktok", "spotify", "instagram"]
+                    options: ["tiktok", "spotify", "instagram", "facebook"]
                     hint: "Détermine le logo et la couleur — ne pas modifier sans en parler au développeur."
                   - { label: "Nom / pseudo du compte", name: "handle", widget: "string" }
                   - label: "Chiffres affichés sur la carte"

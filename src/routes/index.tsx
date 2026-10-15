@@ -506,7 +506,23 @@ const PLATFORM_PRESENTATION: Record<string, { name: string; logo: string; color:
     logo: "/media/logos/instagram.svg",
     color: "bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white",
   },
+  facebook: {
+    name: "Facebook",
+    logo: "/media/logos/facebook.svg",
+    color: "bg-[#1877F2] text-white",
+  },
 };
+
+// Plateforme inconnue (id saisi dans l'admin) : carte neutre plutôt qu'un plantage.
+function platformPresentation(id: string) {
+  return (
+    PLATFORM_PRESENTATION[id.trim().toLowerCase()] ?? {
+      name: id ? id.charAt(0).toUpperCase() + id.slice(1) : "Plateforme",
+      logo: "",
+      color: "bg-[#061219] text-white",
+    }
+  );
+}
 
 function Acquisition() {
   const { acquisition } = mediaKit;
@@ -521,23 +537,29 @@ function Acquisition() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {acquisition.platforms.map((p) => {
-            const presentation = PLATFORM_PRESENTATION[p.id];
+        <div
+          className={`mt-12 grid gap-5 ${
+            acquisition.platforms.length % 2 === 0 ? "md:grid-cols-2" : "lg:grid-cols-3"
+          }`}
+        >
+          {acquisition.platforms.map((p, i) => {
+            const presentation = platformPresentation(p.id);
             return (
               <div
-                key={p.id}
+                key={`${p.id}-${i}`}
                 className="group flex overflow-hidden rounded-2xl border border-border bg-white transition hover:-translate-y-1 hover:shadow-xl"
               >
                 <div
                   className={`flex w-full flex-col overflow-hidden ${p.stats.length === 1 ? "min-h-[300px]" : ""}`}
                 >
                   <div className={`flex items-center gap-4 p-5 ${presentation.color}`}>
-                    <img
-                      src={presentation.logo}
-                      alt={`Logo ${presentation.name}`}
-                      className="size-10 shrink-0 object-contain"
-                    />
+                    {presentation.logo && (
+                      <img
+                        src={presentation.logo}
+                        alt={`Logo ${presentation.name}`}
+                        className="size-10 shrink-0 object-contain"
+                      />
+                    )}
                     <div>
                       <div className="font-display text-2xl font-bold">{presentation.name}</div>
                       <div className="mt-0.5 text-xs opacity-85">{p.handle}</div>
@@ -885,6 +907,30 @@ function Footer() {
 
 /* ---------- Page ---------- */
 
+const SECTIONS: Record<string, () => React.ReactNode> = {
+  hero: () => <Hero />,
+  concept: Concept,
+  propos: Propos,
+  performances: Performances,
+  audience: Audience,
+  acquisition: Acquisition,
+  expertise: Expertise,
+  offers: Offers,
+  reels: InstagramReels,
+  contact: Contact,
+};
+const DEFAULT_SECTION_ORDER = Object.keys(SECTIONS);
+
+// Ordre défini dans l'admin (sectionOrder) : clés inconnues ignorées, doublons retirés,
+// sections oubliées ajoutées à la fin pour ne jamais en perdre une.
+function sectionKeys(content: { sectionOrder?: unknown }) {
+  const requested = Array.isArray(content.sectionOrder)
+    ? content.sectionOrder.map((k) => String(k).trim().toLowerCase())
+    : [];
+  const keys = [...new Set(requested.filter((k) => k in SECTIONS))];
+  return [...keys, ...DEFAULT_SECTION_ORDER.filter((k) => !keys.includes(k))];
+}
+
 export function Index({ showOffers = true }: { showOffers?: boolean }) {
   const [activeMediaKit, setActiveMediaKit] = useState(defaultMediaKit);
 
@@ -908,16 +954,15 @@ export function Index({ showOffers = true }: { showOffers?: boolean }) {
     <div className="min-h-screen bg-background text-foreground">
       <Header showOffers={showOffers} />
       <main>
-        <Hero showOffers={showOffers} />
-        <Concept />
-        <Propos />
-        <Performances />
-        <Audience />
-        <Acquisition />
-        <Expertise />
-        {showOffers && <Offers />}
-        <InstagramReels />
-        <Contact />
+        {sectionKeys(activeMediaKit).map((key) => {
+          if (key === "offers" && !showOffers) return null;
+          const Section = SECTIONS[key];
+          return key === "hero" ? (
+            <Hero key={key} showOffers={showOffers} />
+          ) : (
+            <Section key={key} />
+          );
+        })}
       </main>
       <Footer />
     </div>
