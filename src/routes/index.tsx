@@ -604,10 +604,18 @@ function Acquisition() {
 
 /* ---------- 7. Reels & Offres ---------- */
 
+// Identifiant du reel lu dans le lien Instagram (ex. /reel/DXcVdJwD8sA/).
+function reelIdFromUrl(url: string, fallback: string) {
+  return url.match(/instagram\.com\/(?:reel|reels|p)\/([A-Za-z0-9_-]+)/)?.[1] ?? fallback;
+}
+
+// Vidéo hébergée sur le site si elle correspond bien au reel du lien,
+// sinon lecteur officiel Instagram : il suffit de coller le lien dans l'admin.
 // "#t=0.1" : sans ça, Safari iOS laisse la vidéo noire jusqu'à la lecture.
-// Fichier absent (reel changé dans l'admin sans vidéo) : lien vers Instagram.
-function ReelVideo({ video, url }: { video: string; url: string }) {
-  const [failed, setFailed] = useState(!video);
+function ReelVideo({ id, video, url }: { id: string; video?: string; url: string }) {
+  const reelId = reelIdFromUrl(url, id);
+  const hasLocalVideo = Boolean(video && video.includes(reelId));
+  const [failed, setFailed] = useState(!hasLocalVideo);
   const ref = useRef<HTMLVideoElement>(null);
 
   // L'erreur peut arriver avant l'hydratation React (rendu serveur) : on la relit au montage.
@@ -615,17 +623,19 @@ function ReelVideo({ video, url }: { video: string; url: string }) {
     if (ref.current?.error) setFailed(true);
   }, []);
 
-  if (failed) {
+  if (failed || !video) {
     return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="flex aspect-[9/16] w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white"
-      >
-        <Instagram className="size-12" />
-        <span className="text-sm font-semibold">Voir le reel sur Instagram</span>
-      </a>
+      <div className="aspect-[9/16] w-full overflow-hidden bg-white">
+        <iframe
+          src={`https://www.instagram.com/reel/${reelId}/embed/`}
+          title={`Reel Instagram ${reelId}`}
+          className="size-full border-0"
+          loading="lazy"
+          scrolling="no"
+          allow="autoplay; encrypted-media; picture-in-picture; clipboard-write"
+          allowFullScreen
+        />
+      </div>
     );
   }
 
@@ -679,7 +689,7 @@ function InstagramReels() {
                   Reel {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <ReelVideo video={reel.video} url={reel.url} />
+              <ReelVideo id={reel.id} video={reel.video} url={reel.url} />
               <a
                 href={reel.url}
                 target="_blank"

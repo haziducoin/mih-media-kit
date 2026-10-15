@@ -484,7 +484,8 @@ const ADMIN_HTML = `<!doctype html>
 
       const HINTS = {
         sectionOrder: "Ordre d'affichage des sections sur le site. Utilise Monter / Descendre pour les deplacer. Noms possibles : hero, concept, propos, performances, audience, acquisition, expertise, offers, reels, contact.",
-        platforms: "Champ Id = plateforme : tiktok, spotify, instagram ou facebook (logo et couleur automatiques)."
+        platforms: "Champ Id = plateforme : tiktok, spotify, instagram ou facebook (logo et couleur automatiques).",
+        reels: "Pour changer un reel : colle simplement son lien Instagram dans le champ Url et modifie le nombre de vues. Le reel s'affiche automatiquement (lecteur Instagram), pas besoin de fichier video. Bouton + Ajouter pour en mettre un de plus."
       };
 
       function labelFromKey(key) {
@@ -680,6 +681,7 @@ const ADMIN_HTML = `<!doctype html>
           "- Ne modifie que le contenu demande : textes, chiffres, liens, images.",
           "- Ordre des sections : liste sectionOrder (boutons Monter / Descendre dans l'editeur).",
           "- Listes (plateformes, chiffres...) : boutons Monter / Descendre / Supprimer / + Ajouter. Plateformes reconnues (champ id) : tiktok, spotify, instagram, facebook.",
+          "- Reels : colle seulement le lien Instagram dans url (et les vues) ; le lecteur Instagram s'affiche tout seul, aucun fichier video a fournir.",
           "- Les images peuvent etre des chemins /media/... ou des data:image/...; le site les publiera automatiquement.",
           "- Apres publication, attends 1 a 2 minutes puis verifie l'URL publique."
         ].join("\\n");
