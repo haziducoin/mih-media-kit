@@ -84,10 +84,12 @@ const ADMIN_HTML = `<!doctype html>
         color: var(--text);
       }
       button.danger { background: #b91c1c; }
-      .item { display: grid; gap: 8px; }
+      .item { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: #fbfdfe; }
       .item-tools { display: flex; flex-wrap: wrap; gap: 6px; }
       .item-tools button { padding: 6px 10px; font-size: 12px; }
       .hint { margin: 0; font-size: 12px; }
+      .item.moved { outline: 3px solid var(--primary); outline-offset: 4px; border-radius: 12px; background: rgba(8, 182, 200, 0.08); }
+      .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; max-width: calc(100% - 32px); padding: 12px 16px; border-radius: 12px; background: var(--dark); color: white; font-weight: 700; font-size: 14px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25); }
       button:disabled { cursor: not-allowed; opacity: 0.55; }
       .login {
         min-height: 100vh;
@@ -455,30 +457,80 @@ const ADMIN_HTML = `<!doctype html>
         return "";
       }
 
-      function changeList(path, action, index) {
+      let toastTimer = null;
+      function showToast(message) {
+        let toast = document.getElementById("toast");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "toast";
+          toast.className = "toast";
+          toast.setAttribute("role", "status");
+          document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toast.hidden = true; }, 2500);
+      }
+
+      function itemName(value, position) {
+        if (value && typeof value === "object") {
+          return String(value.id || value.name || value.handle || value.title || ("element " + position));
+        }
+        return String(value || ("element " + position));
+      }
+
+      // Apres le deplacement, l'editeur est reconstruit : on garde l'element a la meme
+      // place a l'ecran et on le met en surbrillance, sinon on a l'impression que rien ne bouge.
+      function changeList(path, action, index, button) {
         const list = getByPath(path);
+        const itemEl = button ? button.closest(".item") : null;
+        const topBefore = itemEl ? itemEl.getBoundingClientRect().top : null;
+        let focusIndex = index;
+        let message = "";
         if (action === "up" && index > 0) {
           list.splice(index - 1, 0, list.splice(index, 1)[0]);
+          focusIndex = index - 1;
+          message = "\u201c" + itemName(list[focusIndex], focusIndex + 1) + "\u201d monte en position " + (focusIndex + 1);
         } else if (action === "down" && index < list.length - 1) {
           list.splice(index + 1, 0, list.splice(index, 1)[0]);
+          focusIndex = index + 1;
+          message = "\u201c" + itemName(list[focusIndex], focusIndex + 1) + "\u201d descend en position " + (focusIndex + 1);
         } else if (action === "add") {
           list.push(list.length ? blankLike(list[list.length - 1]) : "");
+          focusIndex = list.length - 1;
+          message = "Element ajoute en position " + list.length + ". Remplis ses champs.";
         } else if (action === "remove") {
           if (!window.confirm("Supprimer cet element ?")) return;
+          message = "\u201c" + itemName(list[index], index + 1) + "\u201d supprime";
           list.splice(index, 1);
+          focusIndex = Math.min(index, list.length - 1);
         } else {
           return;
         }
+        const scrollBefore = window.scrollY;
         render();
+        window.scrollTo(0, scrollBefore);
+        const targetPath = JSON.stringify(path.concat(focusIndex));
+        const target = Array.from(forms.querySelectorAll(".item")).find(function (el) {
+          return el.getAttribute("data-path") === targetPath;
+        });
+        if (target) {
+          if (topBefore !== null) window.scrollBy(0, target.getBoundingClientRect().top - topBefore);
+          target.classList.add("moved");
+          setTimeout(function () { target.classList.remove("moved"); }, 1800);
+        }
+        showToast(message + " \u2014 pense a Publier en ligne.");
         scheduleLivePreview();
       }
 
-      function toolButton(text, onClick, className) {
+      function toolButton(text, onClick, className, disabled) {
         const button = document.createElement("button");
         button.type = "button";
         button.className = className || "secondary";
         button.textContent = text;
-        button.addEventListener("click", onClick);
+        button.disabled = Boolean(disabled);
+        button.addEventListener("click", function () { onClick(button); });
         return button;
       }
 
@@ -611,18 +663,19 @@ const ADMIN_HTML = `<!doctype html>
           value.forEach(function (item, index) {
             const wrapper = document.createElement("div");
             wrapper.className = "item";
+            wrapper.setAttribute("data-path", JSON.stringify(path.concat(index)));
             const tools = document.createElement("div");
             tools.className = "item-tools";
-            tools.appendChild(toolButton("Monter", function () { changeList(path, "up", index); }));
-            tools.appendChild(toolButton("Descendre", function () { changeList(path, "down", index); }));
-            tools.appendChild(toolButton("Supprimer", function () { changeList(path, "remove", index); }, "danger"));
-            wrapper.appendChild(tools);
+            tools.appendChild(toolButton("Monter", function (button) { changeList(path, "up", index, button); }, "secondary", index === 0));
+            tools.appendChild(toolButton("Descendre", function (button) { changeList(path, "down", index, button); }, "secondary", index === value.length - 1));
+            tools.appendChild(toolButton("Supprimer", function (button) { changeList(path, "remove", index, button); }, "danger"));
             wrapper.appendChild(renderValue(key + " " + (index + 1), item, path.concat(index)));
+            wrapper.appendChild(tools);
             fields.appendChild(wrapper);
           });
           const addTools = document.createElement("div");
           addTools.className = "item-tools";
-          addTools.appendChild(toolButton("+ Ajouter " + labelFromKey(key).toLowerCase(), function () { changeList(path, "add"); }));
+          addTools.appendChild(toolButton("+ Ajouter " + labelFromKey(key).toLowerCase(), function (button) { changeList(path, "add", value.length, button); }));
           fields.appendChild(addTools);
         } else {
           Object.keys(value).forEach(function (childKey) {
