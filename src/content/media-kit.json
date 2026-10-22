@@ -42,9 +42,9 @@
   "propos": {
     "tag": "Le Propos",
     "titleLines": [
-      "Des épreuves.",
-      "Du courage.",
-      "De la résilience."
+      "DES ÉPREUVES,",
+      "DU COURAGE,",
+      "DE LA RÉSILIENCE."
     ],
     "paragraphs": [
       "Nos témoins racontent minute par minute le moment qui a bouleversé leur existence et nous embarquent dans un récit captivant et plein d'émotions.",
@@ -53,7 +53,7 @@
   },
   "concept": {
     "tag": "Le Concept",
-    "heading": "MIH, UN CONCEPT FORT ET ORIGINAL",
+    "heading": "MIH, ORIGINAL ET VIRAL",
     "bullets": [
       "Des formats longs de 40 à 60 minutes",
       "Des témoignages marquants : connexion émotionnelle avec le public",
@@ -83,7 +83,7 @@
   },
   "performances": {
     "tag": "Performances",
-    "heading": "Des récits qui retiennent l'attention",
+    "heading": "LES STATS",
     "bigStat": {
       "value": "12 MILLIONS",
       "label": "record absolu sur une vidéo"
@@ -229,7 +229,7 @@
   "expertise": {
     "tag": "Notre expertise",
     "broadcastersTitle": "Références diffuseurs",
-    "heading": "L'experience des productions Tony Comiti",
+    "heading": "L'EXPÉRIENCE DES PRODUCTIONS TONY COMITI",
     "highlight": "Le programme MIH est publié chaque semaine sur la chaîne Tony Comiti Média.",
     "paragraphs": [
       "MIH est conçu par une équipe de journalistes, community managers, cadreurs et monteurs au sein de la grande agence de presse Tony Comiti.",
@@ -319,14 +319,14 @@
     }
   ],
   "reelsSection": {
-    "tag": "Reels Instagram",
-    "heading": "Un petit aperçu de l'émission"
+    "tag": "Instagram",
+    "heading": "DES REELS QUI CARTONNENT"
   },
   "reels": [
     {
-      "id": "DXcVdJwD8sA",
-      "url": "https://www.instagram.com/reel/DXcVdJwD8sA/",
-      "video": "/media/reels/DXcVdJwD8sA.mp4",
+      "id": "",
+      "url": "https://www.instagram.com/reel/DXcVdJwD8sA/?utm_source=ig_web_copy_link&mdxt=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA==",
+      "video": "",
       "views": "1,1M"
     },
     {
@@ -336,10 +336,10 @@
       "views": "530K"
     },
     {
-      "id": "DXXAIM8MAHy",
-      "url": "https://www.instagram.com/reel/DXXAIM8MAHy/",
-      "video": "/media/reels/DXXAIM8MAHy.mp4",
-      "views": "116K"
+      "id": "",
+      "url": "https://www.instagram.com/reel/Dcv4coSgv_N/?utm_source=ig_web_copy_link&rpxt=MWQ1ZGUxMzBkMA==&srtk=MWQ1ZGUxMzBkMA==",
+      "video": "",
+      "views": "184K"
     }
   ],
   "contact": {
