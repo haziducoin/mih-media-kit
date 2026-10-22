@@ -624,11 +624,12 @@ function ReelVideo({ id, video, url }: { id: string; video?: string; url: string
   }, []);
 
   // Lecteur Instagram recadré sur la vidéo seule (en-tête de 54 px, vidéo en 4:5,
-  // likes/commentaires en dessous) pour ressembler aux autres reels.
+  // likes/commentaires en dessous), agrandi pour remplir le cadre 9:16 comme les
+  // autres reels (les côtés de la vidéo 4:5 sont rognés, comme un object-cover).
   if (failed || !video) {
     return (
       <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
-        <div className="absolute inset-x-0 top-1/2 aspect-[4/5] -translate-y-1/2 overflow-hidden">
+        <div className="absolute left-1/2 top-0 aspect-[4/5] h-full -translate-x-1/2 overflow-hidden">
           <iframe
             src={`https://www.instagram.com/reel/${reelId}/embed/`}
             title={`Reel Instagram ${reelId}`}
@@ -674,7 +675,7 @@ function InstagramReels() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {reels.map((reel, index) => (
             <article
-              key={reel.id}
+              key={`${reel.url}-${index}`}
               className="mx-auto w-full max-w-[320px] overflow-hidden rounded-xl border border-border bg-white shadow-sm transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-md"
             >
               <div className="flex items-center justify-between border-b border-border px-3 py-1.5">

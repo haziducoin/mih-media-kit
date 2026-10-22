@@ -88,6 +88,9 @@ const ADMIN_HTML = `<!doctype html>
       .item-tools { display: flex; flex-wrap: wrap; gap: 6px; }
       .item-tools button { padding: 6px 10px; font-size: 12px; }
       .hint { margin: 0; font-size: 12px; }
+      .section-item { grid-template-columns: 1fr auto; align-items: center; }
+      .section-item strong { font-size: 15px; }
+      @media (max-width: 520px) { .section-item { grid-template-columns: 1fr; } }
       .item.moved { outline: 3px solid var(--primary); outline-offset: 4px; border-radius: 12px; background: rgba(8, 182, 200, 0.08); }
       .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; max-width: calc(100% - 32px); padding: 12px 16px; border-radius: 12px; background: var(--dark); color: white; font-weight: 700; font-size: 14px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25); }
       button:disabled { cursor: not-allowed; opacity: 0.55; }
@@ -506,6 +509,7 @@ const ADMIN_HTML = `<!doctype html>
       }
 
       function itemName(value, position) {
+        if (typeof value === "string" && SECTION_NAMES[value]) return SECTION_NAMES[value];
         if (value && typeof value === "object") {
           return String(value.id || value.name || value.handle || value.title || ("element " + position));
         }
@@ -566,8 +570,22 @@ const ADMIN_HTML = `<!doctype html>
         return button;
       }
 
+      // Noms lisibles des blocs de la page (cles de sectionOrder et des sections du contenu).
+      const SECTION_NAMES = {
+        hero: "Bandeau d'accueil (Hero)",
+        acquisition: "Plateformes (Acquisition)",
+        concept: "Le concept",
+        propos: "Le propos",
+        performances: "Performances (chiffres)",
+        audience: "Audience (commentaires)",
+        expertise: "Expertise Tony Comiti",
+        offers: "Offres & tarifs",
+        reels: "Reels Instagram",
+        contact: "Contact"
+      };
+      const DEFAULT_SECTION_ORDER = Object.keys(SECTION_NAMES);
+
       const HINTS = {
-        sectionOrder: "Ordre d'affichage des sections sur le site. Utilise Monter / Descendre pour les deplacer. Noms possibles : hero, concept, propos, performances, audience, acquisition, expertise, offers, reels, contact.",
         platforms: "Champ Id = plateforme : tiktok, spotify, instagram ou facebook (logo et couleur automatiques).",
         reels: "Pour changer un reel : colle simplement son lien Instagram dans le champ Url et modifie le nombre de vues. Le reel s'affiche automatiquement (lecteur Instagram), pas besoin de fichier video. Bouton + Ajouter pour en mettre un de plus."
       };
@@ -741,12 +759,53 @@ const ADMIN_HTML = `<!doctype html>
         return block;
       }
 
+      // Panneau dedie, en tete de l'editeur : deplacer des blocs entiers de la page.
+      function renderSectionOrder() {
+        const current = Array.isArray(content.sectionOrder) ? content.sectionOrder : [];
+        const order = current.filter(function (key, i) {
+          return SECTION_NAMES[key] && current.indexOf(key) === i;
+        });
+        DEFAULT_SECTION_ORDER.forEach(function (key) {
+          if (order.indexOf(key) === -1) order.push(key);
+        });
+        content.sectionOrder = order;
+
+        const section = document.createElement("section");
+        const heading = document.createElement("h2");
+        heading.textContent = "Ordre des blocs de la page";
+        section.appendChild(heading);
+        const hint = document.createElement("p");
+        hint.className = "hint";
+        hint.textContent = "Deplace un bloc entier (titre, textes, videos...) avec Monter / Descendre. L'ordre ici = l'ordre sur le site, de haut en bas. Pense a Publier en ligne.";
+        section.appendChild(hint);
+        const fields = document.createElement("div");
+        fields.className = "fields";
+        order.forEach(function (key, index) {
+          const item = document.createElement("div");
+          item.className = "item section-item";
+          item.setAttribute("data-path", JSON.stringify(["sectionOrder", index]));
+          const name = document.createElement("strong");
+          name.textContent = (index + 1) + ". " + SECTION_NAMES[key];
+          item.appendChild(name);
+          const tools = document.createElement("div");
+          tools.className = "item-tools";
+          tools.appendChild(toolButton("Monter", function (button) { changeList(["sectionOrder"], "up", index, button); }, "secondary", index === 0));
+          tools.appendChild(toolButton("Descendre", function (button) { changeList(["sectionOrder"], "down", index, button); }, "secondary", index === order.length - 1));
+          item.appendChild(tools);
+          fields.appendChild(item);
+        });
+        section.appendChild(fields);
+        forms.appendChild(section);
+      }
+
       function render() {
         forms.innerHTML = "";
+        renderSectionOrder();
         Object.keys(content).forEach(function (key) {
+          if (key === "sectionOrder") return;
           const section = document.createElement("section");
           const heading = document.createElement("h2");
-          heading.textContent = labelFromKey(key);
+          heading.textContent = SECTION_NAMES[key] || labelFromKey(key);
           section.appendChild(heading);
           const fields = document.createElement("div");
           fields.className = "fields";
