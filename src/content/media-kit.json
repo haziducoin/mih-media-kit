@@ -16,6 +16,9 @@
     "contact"
   ],
   "hero": {
+    "headerButton": "Devenir Sponsor",
+    "playlistButton": "Voir la playlist",
+    "offersButton": "Découvrir nos offres",
     "image": "/media/mih-hero-cover.png",
     "stats": [
       {
@@ -37,6 +40,7 @@
     ]
   },
   "propos": {
+    "tag": "Le Propos",
     "titleLines": [
       "Des épreuves.",
       "Du courage.",
@@ -48,6 +52,7 @@
     ]
   },
   "concept": {
+    "tag": "Le Concept",
     "heading": "MIH, UN CONCEPT FORT ET ORIGINAL",
     "bullets": [
       "Des formats longs de 40 à 60 minutes",
@@ -77,6 +82,7 @@
     ]
   },
   "performances": {
+    "tag": "Performances",
     "heading": "Des récits qui retiennent l'attention",
     "bigStat": {
       "value": "12 MILLIONS",
@@ -112,6 +118,7 @@
     ]
   },
   "audience": {
+    "tag": "Notre Audience",
     "heading": "Une communauté attentive et engagée.",
     "comments": [
       {
@@ -157,6 +164,7 @@
     ]
   },
   "acquisition": {
+    "tag": "Acquisition & Viralité",
     "heading": "MIH sur toutes les plateformes.",
     "note": "Les extraits courts créent de la découverte, puis renvoient vers YouTube / Spotify / Apple Podcast.",
     "platforms": [
@@ -219,6 +227,8 @@
     ]
   },
   "expertise": {
+    "tag": "Notre expertise",
+    "broadcastersTitle": "Références diffuseurs",
     "heading": "L'experience des productions Tony Comiti",
     "highlight": "Le programme MIH est publié chaque semaine sur la chaîne Tony Comiti Média.",
     "paragraphs": [
@@ -251,6 +261,9 @@
         "logo": "/media/broadcasters/rmc.svg"
       }
     ]
+  },
+  "offersSection": {
+    "tag": "Notre Offre & Tarifs"
   },
   "offers": [
     {
@@ -305,6 +318,10 @@
       "highlight": false
     }
   ],
+  "reelsSection": {
+    "tag": "Reels Instagram",
+    "heading": "Un petit aperçu de l'émission"
+  },
   "reels": [
     {
       "id": "DXcVdJwD8sA",
@@ -326,6 +343,9 @@
     }
   ],
   "contact": {
+    "tag": "Contact",
+    "ctaButton": "Prendre rendez-vous avec notre commercial",
+    "socialsTitle": "Nos réseaux sociaux",
     "heading": "Parlons d'un partenariat.",
     "paragraph": "Réservez un créneau de quinze minutes pour cadrer vos objectifs et recevoir une proposition claire.",
     "email": "commercial@monincroyablehistoire.com",

@@ -584,6 +584,23 @@ const ADMIN_HTML = `<!doctype html>
         contact: "Contact"
       };
       const DEFAULT_SECTION_ORDER = Object.keys(SECTION_NAMES);
+      // Titres des parties de l'editeur qui ne sont pas des blocs deplacables.
+      const EXTRA_HEADINGS = {
+        links: "Liens",
+        offersSection: "Offres & tarifs : titre",
+        reelsSection: "Reels Instagram : titres"
+      };
+      // Noms lisibles des champs de texte courts (etiquettes, boutons).
+      const FIELD_LABELS = {
+        tag: "Petit titre (etiquette au-dessus du titre)",
+        heading: "Titre",
+        headerButton: "Bouton en haut de page",
+        playlistButton: "Bouton playlist",
+        offersButton: "Bouton offres",
+        broadcastersTitle: "Titre au-dessus des logos diffuseurs",
+        ctaButton: "Bouton prise de rendez-vous",
+        socialsTitle: "Titre des reseaux sociaux"
+      };
 
       const HINTS = {
         platforms: "Champ Id = plateforme : tiktok, spotify, instagram ou facebook (logo et couleur automatiques).",
@@ -591,6 +608,7 @@ const ADMIN_HTML = `<!doctype html>
       };
 
       function labelFromKey(key) {
+        if (FIELD_LABELS[key]) return FIELD_LABELS[key];
         return String(key)
           .replace(/([A-Z])/g, " $1")
           .replace(/_/g, " ")
@@ -805,7 +823,7 @@ const ADMIN_HTML = `<!doctype html>
           if (key === "sectionOrder") return;
           const section = document.createElement("section");
           const heading = document.createElement("h2");
-          heading.textContent = SECTION_NAMES[key] || labelFromKey(key);
+          heading.textContent = SECTION_NAMES[key] || EXTRA_HEADINGS[key] || labelFromKey(key);
           section.appendChild(heading);
           const fields = document.createElement("div");
           fields.className = "fields";

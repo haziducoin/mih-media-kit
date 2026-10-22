@@ -19,6 +19,12 @@ import defaultMediaKit from "@/content/media-kit.json";
 const EDITOR_DRAFT_KEY = "mih-media-kit-editor-draft";
 let mediaKit = defaultMediaKit;
 
+// Textes modifiables dans l'admin ; si le champ est vide ou absent (ancien brouillon),
+// on garde le texte d'origine.
+function label(value: string | undefined, fallback: string) {
+  return value?.trim() || fallback;
+}
+
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
@@ -98,7 +104,7 @@ function Header({ showOffers = true }: { showOffers?: boolean }) {
           href="#contact"
           className="hidden items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-xs font-semibold text-background shadow-sm transition hover:bg-primary hover:text-primary-foreground md:inline-flex"
         >
-          Devenir Sponsor <ArrowRight className="size-3.5" />
+          {label(mediaKit.hero.headerButton, "Devenir Sponsor")} <ArrowRight className="size-3.5" />
         </a>
       </div>
     </header>
@@ -148,14 +154,14 @@ function Hero({ showOffers = true }: { showOffers?: boolean }) {
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-[#ff0033] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#e6002e] hover:shadow-lg"
             >
-              Voir la playlist <Youtube className="size-4" />
+              {label(hero.playlistButton, "Voir la playlist")} <Youtube className="size-4" />
             </a>
             {showOffers && (
               <a
                 href="#offres"
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-primary"
               >
-                Découvrir nos offres <ArrowRight className="size-4" />
+                {label(hero.offersButton, "Découvrir nos offres")} <ArrowRight className="size-4" />
               </a>
             )}
           </div>
@@ -174,7 +180,7 @@ function Propos() {
     <section id="propos" className="bg-white py-24">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <div>
-          <SectionTag>Le Propos</SectionTag>
+          <SectionTag>{label(propos.tag, "Le Propos")}</SectionTag>
           <div className="relative mt-8">
             <div className="absolute -left-3 -top-12 font-serif text-8xl leading-none text-primary/20 md:text-9xl">
               “
@@ -211,7 +217,7 @@ function Concept() {
     <section id="concept" className="bg-slate-50 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-4xl">
-          <SectionTag>Le Concept</SectionTag>
+          <SectionTag>{label(concept.tag, "Le Concept")}</SectionTag>
           <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-6xl">
             {concept.heading}
           </h2>
@@ -278,7 +284,7 @@ function Performances() {
         <div className="rounded-2xl bg-[#061219] p-7 text-white md:p-10 max-md:p-5">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
             <div>
-              <SectionTag>Performances</SectionTag>
+              <SectionTag>{label(performances.tag, "Performances")}</SectionTag>
               <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-5xl">
                 {performances.heading}
               </h2>
@@ -428,7 +434,7 @@ function Audience() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
           <div>
-            <SectionTag>Notre Audience</SectionTag>
+            <SectionTag>{label(audience.tag, "Notre Audience")}</SectionTag>
             <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-5xl">
               {audience.heading}
             </h2>
@@ -531,7 +537,7 @@ function Acquisition() {
     <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-4xl">
-          <SectionTag>Acquisition & Viralité</SectionTag>
+          <SectionTag>{label(acquisition.tag, "Acquisition & Viralité")}</SectionTag>
           <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-6xl">
             {acquisition.heading}
           </h2>
@@ -666,9 +672,9 @@ function InstagramReels() {
     <section className="bg-slate-50 py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-3xl">
-          <SectionTag>Reels Instagram</SectionTag>
+          <SectionTag>{label(mediaKit.reelsSection?.tag, "Reels Instagram")}</SectionTag>
           <h2 className="mt-4 font-display text-3xl font-bold leading-tight md:text-4xl">
-            Un petit aperçu de l'émission
+            {label(mediaKit.reelsSection?.heading, "Un petit aperçu de l'émission")}
           </h2>
         </div>
 
@@ -719,7 +725,7 @@ function Expertise() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-4xl">
           <div>
-            <SectionTag>Notre expertise</SectionTag>
+            <SectionTag>{label(expertise.tag, "Notre expertise")}</SectionTag>
             <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-6xl">
               {expertise.heading}
             </h2>
@@ -731,7 +737,7 @@ function Expertise() {
             </div>
             <div className="mt-8">
               <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-                Références diffuseurs
+                {label(expertise.broadcastersTitle, "Références diffuseurs")}
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 {expertise.broadcasters.map((logo) => (
@@ -763,7 +769,7 @@ function Offers() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-3xl">
           <SectionTag className="px-5 py-2 text-sm md:px-6 md:py-2.5 md:text-base">
-            Notre Offre & Tarifs
+            {label(mediaKit.offersSection?.tag, "Notre Offre & Tarifs")}
           </SectionTag>
         </div>
 
@@ -857,7 +863,7 @@ function Contact() {
         <div className="overflow-hidden rounded-3xl bg-[#061219] p-10 text-white md:p-16 max-md:p-6">
           <div className="grid gap-12 lg:grid-cols-2">
             <div>
-              <SectionTag>Contact</SectionTag>
+              <SectionTag>{label(contact.tag, "Contact")}</SectionTag>
               <h2 className="mt-5 font-display text-4xl font-bold leading-tight md:text-5xl">
                 {contact.heading}
               </h2>
@@ -868,7 +874,7 @@ function Contact() {
                 rel="noreferrer"
                 className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-4 text-sm font-bold max-md:w-full max-md:justify-center max-md:px-5 max-md:text-center text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-white hover:text-foreground"
               >
-                Prendre rendez-vous avec notre commercial
+                {label(contact.ctaButton, "Prendre rendez-vous avec notre commercial")}
                 <ArrowRight className="size-4" />
               </a>
 
@@ -903,7 +909,7 @@ function Contact() {
 
             <div className="space-y-4">
               <div className="text-xs font-bold uppercase tracking-widest opacity-80">
-                Nos réseaux sociaux
+                {label(contact.socialsTitle, "Nos réseaux sociaux")}
               </div>
               {contact.socials.map((s) => {
                 const presentation = SOCIAL_PRESENTATION[s.id];
