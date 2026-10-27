@@ -113,8 +113,16 @@ function Header({ showOffers = true }: { showOffers?: boolean }) {
 
 /* ---------- 1. Hero ---------- */
 
+// Proportions de l'image d'accueil (relues au chargement, l'image pouvant être changée dans
+// l'admin) : sur ordinateur, le bandeau des chiffres prend la largeur AFFICHÉE de l'image.
+const HERO_RATIO_PAR_DEFAUT = 1494 / 1053;
+
 function Hero({ showOffers = true }: { showOffers?: boolean }) {
   const { hero, links } = mediaKit;
+  const [ratio, setRatio] = useState(HERO_RATIO_PAR_DEFAUT);
+  const lireRatio = (img: HTMLImageElement | null) => {
+    if (img?.naturalWidth && img.naturalHeight) setRatio(img.naturalWidth / img.naturalHeight);
+  };
 
   return (
     <section className="relative min-h-[calc(100vh-4.5rem)] overflow-hidden bg-[#061219] text-white max-md:min-h-0">
@@ -126,16 +134,21 @@ function Hero({ showOffers = true }: { showOffers?: boolean }) {
         aria-label="Voir la playlist MIH sur YouTube"
       >
         <img
+          ref={(img) => lireRatio(img)}
           src={hero.image}
           alt="MIH - Mon Incroyable Histoire"
           className="size-full object-contain object-top max-md:h-auto"
+          onLoad={(e) => lireRatio(e.currentTarget)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#061219]/90 via-[#061219]/10 to-transparent" />
       </a>
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-7xl items-end px-5 pb-10 pt-40 md:px-6 md:pb-14 max-md:min-h-0 max-md:pt-2">
+      <div
+        className="relative mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-7xl items-end px-5 pb-10 pt-40 md:w-[min(100%,calc((100vh-4.5rem)*var(--hero-ratio)))] md:max-w-none md:px-[3%] md:pb-14 max-md:min-h-0 max-md:pt-2"
+        style={{ "--hero-ratio": ratio } as React.CSSProperties}
+      >
         <div className="w-full">
-          <div className="grid max-w-3xl grid-cols-2 gap-3 border-y border-white/20 bg-[#061219]/60 py-5 backdrop-blur md:max-w-5xl md:grid-cols-4">
+          <div className="grid max-w-3xl grid-cols-2 gap-3 border-y border-white/20 bg-[#061219]/60 py-5 backdrop-blur md:max-w-none md:grid-cols-4">
             {hero.stats.map((stat) => (
               <div key={stat.label}>
                 <div className="font-display text-4xl font-bold text-white md:text-6xl">
