@@ -85,7 +85,7 @@
     "tag": "Performances",
     "heading": "LES STATS",
     "bigStat": {
-      "value": "12 MILLIONS",
+      "value": "13 MILLIONS",
       "label": "record absolu sur une vidéo"
     },
     "comparison": [
@@ -205,7 +205,7 @@
         "handle": "@monincroyablehistoire_mih",
         "stats": [
           {
-            "value": "20K",
+            "value": "22K",
             "label": "Abonnés"
           },
           {
@@ -219,7 +219,7 @@
         "handle": "@monincroyablehistoiremedia",
         "stats": [
           {
-            "value": "85K",
+            "value": "93K",
             "label": "Abonnés"
           }
         ]
