@@ -130,7 +130,7 @@
       "label": "vues cumulées des épisodes sur YouTube"
     },
     "ageSplit": {
-      "heading": "63 % ont entre 25 et 54 ans",
+      "heading": "Près de 2 spectateurs sur 3 ont entre 25 et 54 ans (63,5 %)",
       "note": "Spectateurs YouTube de la playlist MIH, depuis février 2025.",
       "ages": [
         {
@@ -438,7 +438,7 @@
     "heading": "Une audience francophone, adulte, qui reste jusqu'au bout.",
     "watch": {
       "value": "12 à 17 min",
-      "label": "regardées en moyenne à chaque vue",
+      "label": "regardées en moyenne par vue, selon les épisodes",
       "episodes": [
         {
           "title": "Je suis tombée amoureuse d'un mythomane",
@@ -492,7 +492,7 @@
     },
     "countries": {
       "value": "75 %",
-      "label": "de l'audience YouTube vit dans un pays francophone",
+      "label": "de l'audience YouTube en France, Belgique, Canada et Suisse",
       "items": [
         {
           "name": "France",
@@ -562,7 +562,7 @@
           "value": 11.7
         }
       ],
-      "note": "Cœur de cible : 35-59 ans (54 %)"
+      "note": "54 % des auditeurs ont entre 35 et 59 ans"
     },
     "sources": "Sources : YouTube Studio (playlist MIH, depuis février 2025), TikTok Studio, Facebook (juillet-novembre 2026), Spotify for Creators."
   }
