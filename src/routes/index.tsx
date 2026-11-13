@@ -12,7 +12,6 @@ import {
   Youtube,
   Headphones,
 } from "lucide-react";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import defaultMediaKit from "@/content/media-kit.json";
 
@@ -289,7 +288,6 @@ function Concept() {
 
 function Performances() {
   const { performances } = mediaKit;
-  const donutColors = ["#08b6c8", "#101827"];
 
   return (
     <section id="chiffres" className="bg-white py-20">
@@ -310,6 +308,16 @@ function Performances() {
                 <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-white/55 md:text-sm">
                   {performances.bigStat.label}
                 </div>
+                {performances.cumulStat?.value && (
+                  <div className="mt-6 border-t border-white/10 pt-6">
+                    <div className="font-display text-4xl font-bold leading-none text-white md:text-5xl">
+                      {performances.cumulStat.value}
+                    </div>
+                    <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-white/55 md:text-sm">
+                      {performances.cumulStat.label}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -366,42 +374,7 @@ function Performances() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white p-5 text-foreground shadow-xl md:p-6">
-              <h3 className="font-display text-2xl font-bold">Cœur de cible</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Répartition 25-45 ans.</p>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={performances.audienceSplit}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={76}
-                      outerRadius={112}
-                      paddingAngle={4}
-                      stroke="none"
-                    >
-                      {performances.audienceSplit.map((entry, index) => (
-                        <Cell key={entry.name} fill={donutColors[index]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        border: "1px solid #cbd5e1",
-                        borderRadius: "12px",
-                        boxShadow: "0 12px 30px rgba(15, 23, 42, 0.12)",
-                      }}
-                      formatter={(value: number | string) => [`${value}%`, "Part"]}
-                    />
-                    <Legend
-                      verticalAlign="bottom"
-                      iconType="circle"
-                      wrapperStyle={{ fontSize: 12, fontWeight: 600 }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+            <CoeurDeCible />
           </div>
         </div>
       </div>
@@ -434,6 +407,291 @@ function ComparisonBar({
         {value.toLocaleString("fr-FR")}%
       </div>
     </div>
+  );
+}
+
+/* ---------- Chiffres d'audience (Cœur de cible + Qui nous regarde) ---------- */
+
+const fr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+const enSecondes = (t: string) => {
+  const [m, s] = t.split(":").map(Number);
+  return (m || 0) * 60 + (s || 0);
+};
+
+// Les graphiques sont visibles d'emblée ; quand ils entrent à l'écran pour la
+// première fois, les barres se remplissent (rien ne dépend de l'animation).
+function useVu<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          el.dataset.vu = "1";
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+function CoeurDeCible() {
+  const { ageSplit } = mediaKit.performances;
+  const ref = useVu<HTMLDivElement>();
+  const max = Math.max(...ageSplit.ages.map((a) => a.value));
+  const [femmes, hommes] = ageSplit.gender;
+
+  return (
+    <div
+      ref={ref}
+      className="flex flex-col rounded-2xl border border-white/10 bg-white p-5 text-foreground shadow-xl md:p-6"
+    >
+      <h3 className="font-display text-2xl font-bold">Cœur de cible</h3>
+      <p className="mt-1 text-sm font-semibold text-foreground">{ageSplit.heading}</p>
+
+      <div
+        className="mt-6 flex gap-1.5"
+        role="img"
+        aria-label={ageSplit.ages.map((a) => `${a.name} ans : ${fr(a.value)} %`).join(", ")}
+      >
+        {ageSplit.ages.map((a, i) => (
+          <div key={a.name} className="flex flex-1 flex-col items-center">
+            <span
+              className={`mb-1.5 text-xs font-bold ${a.cible ? "text-foreground" : "text-slate-500"}`}
+            >
+              {fr(a.value)}%
+            </span>
+            <div className="flex h-36 w-full items-end lg:h-64">
+              <div
+                className={`mih-monte w-full rounded-t-md ${a.cible ? "bg-primary" : "bg-slate-200"}`}
+                style={{ height: `${(a.value / max) * 100}%`, animationDelay: `${i * 60}ms` }}
+              />
+            </div>
+            <span className="mt-2 text-[11px] font-semibold text-slate-500">{a.name}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto pt-7">
+        <div className="flex justify-between text-xs font-semibold">
+          <span className="text-foreground">
+            {femmes.name} {fr(femmes.value)}%
+          </span>
+          <span className="text-foreground">
+            {hommes.name} {fr(hommes.value)}%
+          </span>
+        </div>
+        <div className="mt-2 flex h-3 overflow-hidden rounded-full">
+          <div className="bg-primary" style={{ width: `${femmes.value}%` }} />
+          <div className="bg-[#101827]" style={{ width: `${hommes.value}%` }} />
+        </div>
+        <p className="mt-4 text-xs text-slate-500">{ageSplit.note}</p>
+      </div>
+    </div>
+  );
+}
+
+function ChiffreTitre({
+  value,
+  label: texte,
+  sombre = false,
+  compact = false,
+}: {
+  value: string;
+  label: string;
+  sombre?: boolean;
+  compact?: boolean;
+}) {
+  return (
+    <div>
+      <div
+        className={`font-display font-bold leading-none ${compact ? "text-4xl md:text-5xl" : "text-5xl md:text-6xl"} ${sombre ? "text-white" : "text-foreground"}`}
+      >
+        {value}
+      </div>
+      <p className={`mt-3 max-w-xs text-sm font-semibold ${sombre ? "text-white/70" : "text-slate-600"}`}>
+        {texte}
+      </p>
+    </div>
+  );
+}
+
+function Portrait() {
+  const ref = useVu<HTMLElement>();
+  const portrait = (mediaKit as typeof defaultMediaKit).portrait;
+  if (!portrait) return null;
+  const { watch, devices, countries, tiktok, facebook, podcast } = portrait;
+  const francophone = countries.items.reduce((t, c) => t + c.value, 0);
+  const france = countries.items[0]?.value ?? 0;
+  const cases = Array.from({ length: 100 }, (_, i) =>
+    i < Math.round(france) ? "france" : i < Math.round(francophone) ? "franco" : "autre",
+  );
+  const tiktokMax = Math.max(...tiktok.ages.map((a) => a.value));
+  const podcastFr = podcast.items.reduce((t, c) => t + c.value, 0);
+
+  return (
+    <section ref={ref} id="audience-chiffres" className="bg-white pb-20">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="max-w-3xl">
+          <SectionTag>{label(portrait.tag, "Qui nous regarde")}</SectionTag>
+          <h2 className="mt-5 font-display text-4xl font-bold leading-tight [text-wrap:balance] md:text-5xl">
+            {portrait.heading}
+          </h2>
+        </div>
+
+        <div className="mt-12 grid gap-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-16">
+          {/* Durée regardée, épisode par épisode */}
+          <div className="self-start rounded-2xl bg-[#061219] p-6 text-white md:p-8">
+            <ChiffreTitre value={watch.value} label={watch.label} sombre />
+            <ul className="mt-8 space-y-5">
+              {watch.episodes.map((ep, i) => {
+                const part = (enSecondes(ep.watched) / enSecondes(ep.duration)) * 100;
+                return (
+                  <li key={ep.title}>
+                    <div className="flex items-baseline justify-between gap-4 text-sm">
+                      <span className="truncate text-white/85">{ep.title}</span>
+                      <span className="shrink-0 font-display font-bold text-white">
+                        {ep.watched}
+                        <span className="font-sans font-semibold text-white/45"> / {ep.duration}</span>
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="mih-pousse h-full rounded-full bg-primary"
+                        style={{ width: `${part}%`, animationDelay: `${i * 90}ms` }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-6 text-xs text-white/55">
+              Durée moyenne d'une vue rapportée à la durée de l'épisode.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-12">
+            {/* Écrans */}
+            <div>
+              <ChiffreTitre value={devices.value} label={devices.label} compact />
+              <div className="mt-6 flex h-4 overflow-hidden rounded-full" role="img"
+                aria-label={devices.items.map((d) => `${d.name} ${fr(d.value)} %`).join(", ")}>
+                {devices.items.map((d, i) => (
+                  <div
+                    key={d.name}
+                    className={d.highlight ? "bg-primary" : ["bg-[#101827]", "bg-slate-400", "bg-slate-300", "bg-slate-200"][i]}
+                    style={{ width: `${d.value}%` }}
+                  />
+                ))}
+              </div>
+              <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                {devices.items.map((d, i) => (
+                  <li key={d.name} className="flex items-center justify-between gap-3">
+                    <span className={`inline-flex items-center gap-2 ${d.highlight ? "font-bold text-foreground" : "text-slate-600"}`}>
+                      <span className={`size-2.5 rounded-full ${d.highlight ? "bg-primary" : ["bg-[#101827]", "bg-slate-400", "bg-slate-300", "bg-slate-200"][i]}`} />
+                      {d.name}
+                    </span>
+                    <span className="font-semibold text-foreground">{fr(d.value)}%</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Francophonie : 100 cases = 100 % de l'audience */}
+            <div>
+              <ChiffreTitre value={countries.value} label={countries.label} compact />
+              <div className="mt-6 grid max-w-[13rem] grid-cols-10 gap-[3px]" role="img"
+                aria-label={countries.items.map((c) => `${c.name} ${fr(c.value)} %`).join(", ")}>
+                {cases.map((t, i) => (
+                  <span
+                    key={i}
+                    className={`aspect-square rounded-[3px] ${t === "france" ? "bg-primary" : t === "franco" ? "bg-[#101827]" : "bg-slate-100"}`}
+                  />
+                ))}
+              </div>
+              <p className="mt-4 text-sm text-slate-600">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
+                  <span className="size-2.5 rounded-sm bg-primary" /> France {fr(france)}%
+                </span>
+                <span className="mx-2 text-slate-300">·</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-sm bg-[#101827]" />
+                  {countries.items.slice(1).map((c) => `${c.name} ${fr(c.value)}%`).join(", ")}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Les autres plateformes */}
+        <div className="mt-16 grid gap-10 border-t border-border pt-10 md:grid-cols-3 md:gap-0 md:divide-x md:divide-border">
+          <div className="md:pr-8">
+            <PlateformeNom id="tiktok" />
+            <ChiffreTitre value={tiktok.value} label={tiktok.label} compact />
+            <ul className="mt-6 space-y-2">
+              {tiktok.ages.map((a, i) => (
+                <li key={a.name} className="grid grid-cols-[3rem_1fr_3rem] items-center gap-3 text-xs">
+                  <span className="font-semibold text-slate-600">{a.name}</span>
+                  <span className="h-2 overflow-hidden rounded-full bg-slate-100">
+                    <span
+                      className={`mih-pousse block h-full rounded-full ${a.cible ? "bg-primary" : "bg-slate-300"}`}
+                      style={{ width: `${(a.value / tiktokMax) * 100}%`, animationDelay: `${i * 60}ms` }}
+                    />
+                  </span>
+                  <span className={`text-right font-bold ${a.cible ? "text-foreground" : "text-slate-500"}`}>{fr(a.value)}%</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="md:px-8">
+            <PlateformeNom id="facebook" />
+            <ChiffreTitre value={facebook.value} label={facebook.label} compact />
+            <div className="mt-6 flex h-28 items-end gap-4">
+              {[
+                { l: facebook.fromLabel, v: facebook.from, c: "bg-slate-200" },
+                { l: facebook.toLabel, v: facebook.to, c: "bg-primary" },
+              ].map((b) => (
+                <div key={b.l} className="flex h-full flex-1 flex-col justify-end">
+                  <span className="mb-1 text-xs font-bold text-foreground">{fr(Math.round(b.v / 1000))} K</span>
+                  <div className={`mih-monte rounded-t-md ${b.c}`} style={{ height: `${(b.v / facebook.to) * 100}%` }} />
+                  <span className="mt-2 text-[11px] font-semibold text-slate-500">{b.l}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-slate-600">{facebook.note}</p>
+          </div>
+
+          <div className="md:pl-8">
+            <PlateformeNom id="spotify" texte="Podcast" />
+            <ChiffreTitre value={podcast.value} label={podcast.label} compact />
+            <div className="mt-6 flex h-4 overflow-hidden rounded-full bg-slate-100">
+              <div className="bg-primary" style={{ width: `${podcast.items[0].value}%` }} />
+              <div className="bg-[#101827]" style={{ width: `${podcast.items[1].value}%` }} />
+            </div>
+            <p className="mt-3 text-sm text-slate-600">
+              {podcast.items.map((c) => `${c.name} ${fr(c.value)}%`).join(" · ")}
+              <span className="text-slate-400"> · autres {fr(100 - podcastFr)}%</span>
+            </p>
+            <p className="mt-4 text-sm font-semibold text-foreground">{podcast.note}</p>
+          </div>
+        </div>
+
+        <p className="mt-10 text-xs text-slate-500">{portrait.sources}</p>
+      </div>
+    </section>
+  );
+}
+
+function PlateformeNom({ id, texte }: { id: string; texte?: string }) {
+  const p = platformPresentation(id);
+  return (
+    <div className="mb-4 text-sm font-semibold uppercase tracking-wider text-primary">{texte ?? p.name}</div>
   );
 }
 
@@ -981,6 +1239,7 @@ const SECTIONS: Record<string, () => React.ReactNode> = {
   concept: Concept,
   propos: Propos,
   performances: Performances,
+  portrait: Portrait,
   audience: Audience,
   acquisition: Acquisition,
   expertise: Expertise,

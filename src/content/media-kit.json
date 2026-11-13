@@ -7,6 +7,7 @@
     "hero",
     "acquisition",
     "performances",
+    "portrait",
     "concept",
     "propos",
     "audience",
@@ -34,7 +35,7 @@
         "label": "taux de rétention"
       },
       {
-        "value": "44",
+        "value": "47",
         "label": "épisodes"
       }
     ]
@@ -78,6 +79,24 @@
         "url": "https://youtu.be/XLBSqOR7bzA?si=QcByc05lYuDQwe9d",
         "title": "Au coeur du Bataclan, le chef de la BRI raconte l'assaut",
         "views": "228K vues"
+      },
+      {
+        "youtubeId": "tDvBxR-3q4Y",
+        "url": "https://www.youtube.com/watch?v=tDvBxR-3q4Y&list=PLyzqvdCqSk_lwjj3ZDqUhZr5faSfnjbE6",
+        "title": "Je suis médium et je vais parler avec une défunte en direct",
+        "views": "241K vues"
+      },
+      {
+        "youtubeId": "ntZTat7fzIE",
+        "url": "https://www.youtube.com/watch?v=ntZTat7fzIE&list=PLyzqvdCqSk_lwjj3ZDqUhZr5faSfnjbE6",
+        "title": "J’ai perdu mes mains et mes pieds, mais je suis plus forte que jamais",
+        "views": "154K vues"
+      },
+      {
+        "youtubeId": "JwG6VqiAwis",
+        "url": "https://www.youtube.com/watch?v=JwG6VqiAwis&list=PLyzqvdCqSk_lwjj3ZDqUhZr5faSfnjbE6",
+        "title": "Amour, argent et bonnes manières : les secrets de ma vie d’aristocrate",
+        "views": "77K vues"
       }
     ]
   },
@@ -106,16 +125,57 @@
       }
     ],
     "comparisonNote": "Sources marché : Benchmarks VidIQ/TubeBuddy 2025 & données officielles YouTube Creator Academy pour les formats documentaires.",
-    "audienceSplit": [
-      {
-        "name": "Hommes (25-45 ans)",
-        "value": 48
-      },
-      {
-        "name": "Femmes (25-45 ans)",
-        "value": 52
-      }
-    ]
+    "cumulStat": {
+      "value": "7,6 MILLIONS",
+      "label": "vues cumulées des épisodes sur YouTube"
+    },
+    "ageSplit": {
+      "heading": "63 % ont entre 25 et 54 ans",
+      "note": "Spectateurs YouTube de la playlist MIH, depuis février 2025.",
+      "ages": [
+        {
+          "name": "13-17",
+          "value": 1.2
+        },
+        {
+          "name": "18-24",
+          "value": 5.2
+        },
+        {
+          "name": "25-34",
+          "value": 22.5,
+          "cible": true
+        },
+        {
+          "name": "35-44",
+          "value": 23.1,
+          "cible": true
+        },
+        {
+          "name": "45-54",
+          "value": 17.9,
+          "cible": true
+        },
+        {
+          "name": "55-64",
+          "value": 16.4
+        },
+        {
+          "name": "65+",
+          "value": 13.7
+        }
+      ],
+      "gender": [
+        {
+          "name": "Femmes",
+          "value": 51.1
+        },
+        {
+          "name": "Hommes",
+          "value": 48.9
+        }
+      ]
+    }
   },
   "audience": {
     "tag": "Notre Audience",
@@ -183,7 +243,7 @@
         "handle": "@monincroyablehistoire",
         "stats": [
           {
-            "value": "238K",
+            "value": "239K",
             "label": "Abonnés"
           },
           {
@@ -219,7 +279,7 @@
         "handle": "@monincroyablehistoiremedia",
         "stats": [
           {
-            "value": "93K",
+            "value": "95K",
             "label": "Abonnés"
           }
         ]
@@ -372,5 +432,138 @@
         "href": "https://open.spotify.com/search/Mon%20Incroyable%20Histoire"
       }
     ]
+  },
+  "portrait": {
+    "tag": "Qui nous regarde",
+    "heading": "Une audience francophone, adulte, qui reste jusqu'au bout.",
+    "watch": {
+      "value": "12 à 17 min",
+      "label": "regardées en moyenne à chaque vue",
+      "episodes": [
+        {
+          "title": "Je suis tombée amoureuse d'un mythomane",
+          "watched": "17:25",
+          "duration": "42:41"
+        },
+        {
+          "title": "J'ai vécu l'enfer dans les prisons balinaises",
+          "watched": "16:30",
+          "duration": "41:39"
+        },
+        {
+          "title": "Balancé par mon collègue, j'ai fait de la prison à sa place",
+          "watched": "15:23",
+          "duration": "43:37"
+        },
+        {
+          "title": "À 19 ans, je me suis réveillée aveugle",
+          "watched": "12:29",
+          "duration": "44:49"
+        },
+        {
+          "title": "Fou de chirurgie : à 24 ans, j'ai déjà fait 25 opérations",
+          "watched": "11:41",
+          "duration": "42:00"
+        }
+      ]
+    },
+    "devices": {
+      "value": "1 heure sur 5",
+      "label": "de visionnage se fait sur une télévision",
+      "items": [
+        {
+          "name": "Mobile",
+          "value": 61.1
+        },
+        {
+          "name": "Télévision",
+          "value": 21.1,
+          "highlight": true
+        },
+        {
+          "name": "Ordinateur",
+          "value": 11.7
+        },
+        {
+          "name": "Tablette",
+          "value": 6.1
+        }
+      ]
+    },
+    "countries": {
+      "value": "75 %",
+      "label": "de l'audience YouTube vit dans un pays francophone",
+      "items": [
+        {
+          "name": "France",
+          "value": 64.3
+        },
+        {
+          "name": "Belgique",
+          "value": 4.5
+        },
+        {
+          "name": "Canada",
+          "value": 4.0
+        },
+        {
+          "name": "Suisse",
+          "value": 2.3
+        }
+      ]
+    },
+    "tiktok": {
+      "value": "54 %",
+      "label": "des abonnés TikTok ont entre 18 et 34 ans",
+      "ages": [
+        {
+          "name": "18-24",
+          "value": 16.8,
+          "cible": true
+        },
+        {
+          "name": "25-34",
+          "value": 37.7,
+          "cible": true
+        },
+        {
+          "name": "35-44",
+          "value": 19.3
+        },
+        {
+          "name": "45-54",
+          "value": 14.4
+        },
+        {
+          "name": "55+",
+          "value": 11.8
+        }
+      ]
+    },
+    "facebook": {
+      "value": "+84 000",
+      "label": "abonnés Facebook depuis juillet",
+      "from": 11040,
+      "to": 95293,
+      "fromLabel": "Juillet",
+      "toLabel": "Novembre",
+      "note": "649 000 visites de la page sur la période"
+    },
+    "podcast": {
+      "value": "88 %",
+      "label": "des auditeurs du podcast en France et en Belgique",
+      "items": [
+        {
+          "name": "France",
+          "value": 76.8
+        },
+        {
+          "name": "Belgique",
+          "value": 11.7
+        }
+      ],
+      "note": "Cœur de cible : 35-59 ans (54 %)"
+    },
+    "sources": "Sources : YouTube Studio (playlist MIH, depuis février 2025), TikTok Studio, Facebook (juillet-novembre 2026), Spotify for Creators."
   }
 }

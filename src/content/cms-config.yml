@@ -92,6 +92,13 @@ collections:
                 fields:
                   - { label: "Chiffre", name: "value", widget: "string" }
                   - { label: "Légende", name: "label", widget: "string" }
+              - label: "Vues cumulées (sous le gros chiffre)"
+                name: "cumulStat"
+                widget: "object"
+                required: false
+                fields:
+                  - { label: "Chiffre", name: "value", widget: "string" }
+                  - { label: "Légende", name: "label", widget: "string" }
               - label: "Comparatif MIH vs marché"
                 name: "comparison"
                 widget: "list"

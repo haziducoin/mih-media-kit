@@ -90,3 +90,20 @@
     overflow-wrap: break-word;
   }
 }
+
+/* Graphiques d'audience : les barres sont pleines par défaut ; elles se
+   remplissent une fois, à leur première apparition à l'écran. */
+@keyframes mih-pousse { from { transform: scaleX(0); } }
+@keyframes mih-monte { from { transform: scaleY(0); } }
+[data-vu="1"] .mih-pousse {
+  transform-origin: left;
+  animation: mih-pousse 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+[data-vu="1"] .mih-monte {
+  transform-origin: bottom;
+  animation: mih-monte 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-vu="1"] .mih-pousse,
+  [data-vu="1"] .mih-monte { animation: none; }
+}
