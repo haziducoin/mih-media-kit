@@ -329,7 +329,7 @@
     {
       "num": "01",
       "title": "Le Pré-Roll",
-      "price": "4 000",
+      "price": "2 500",
       "unit": "€",
       "desc": "Message court au début ou à la fin de la vidéo.",
       "example": "« Cette vidéo est soutenue par [Marque]. Allez sur [lien] »",
@@ -342,7 +342,7 @@
     {
       "num": "02",
       "title": "L'Intégration Premium : Mid-roll intégré",
-      "price": "6 000",
+      "price": "5 000",
       "unit": "€",
       "desc": "La marque apparaît au milieu de l'épisode, après une respiration éditoriale.",
       "example": "L'invité évoque un usage concret, dans le fil de son histoire.",
@@ -355,7 +355,7 @@
     {
       "num": "03",
       "title": "BUNDLE (Long-Format + Shorts)",
-      "price": "8 500",
+      "price": "7 500",
       "unit": "€",
       "desc": "1 présence dans l'épisode + 3 à 4 Shorts TikTok autour du même partenaire.",
       "example": "Une même campagne touche YouTube et TikTok sans changer de territoire.",
@@ -368,7 +368,7 @@
     {
       "num": "04",
       "title": "MIH Business : l'épisode dédié",
-      "price": "8 900",
+      "price": "7 900",
       "unit": "€",
       "desc": "Un épisode de 40 à 60 minutes consacré au parcours d'un fondateur et à son entreprise, tourné et produit par nos équipes.",
       "example": "Tous frais inclus : tournage, montage, production et droits d'utilisation de la vidéo.",
