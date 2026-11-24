@@ -367,13 +367,14 @@
     },
     {
       "num": "04",
-      "title": "Le Partenariat de Saison",
-      "price": "Sur devis",
-      "unit": "",
-      "desc": "Une présence installée sur plusieurs épisodes, pensée pour la répétition et la confiance.",
-      "example": "Deux prises de parole séparées, avec une cohérence éditoriale sur la durée.",
+      "title": "MIH Business : l'épisode dédié",
+      "price": "7 900",
+      "unit": "€",
+      "desc": "Un épisode de 40 à 60 minutes consacré au parcours d'un fondateur et à son entreprise, tourné et produit par nos équipes.",
+      "example": "Tous frais inclus : tournage, montage, production et droits d'utilisation de la vidéo.",
       "meta": [
-        "Intégrations multiples non consécutives"
+        "Vidéo de 40-60 min, tous frais inclus",
+        "Hors extraits publiés sur nos réseaux sociaux"
       ],
       "highlight": false
     }
